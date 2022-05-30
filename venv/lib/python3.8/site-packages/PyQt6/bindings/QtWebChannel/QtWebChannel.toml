@@ -1,0 +1,6 @@
+# Automatically generated configuration for PyQt6.QtWebChannel.
+
+sip-version = "6.6.0"
+sip-abi-version = "13.2"
+module-tags = ["Qt_6_3_0", "Linux"]
+module-disabled-features = []
