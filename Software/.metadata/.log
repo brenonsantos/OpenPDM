@@ -1,0 +1,18 @@
+!SESSION 2023-03-28 10:06:54.152 -----------------------------------------------
+eclipse.buildId=Version 1.12.0
+java.version=11.0.17
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -data /home/breno/OpenPDM/Software -os linux -ws gtk -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2023-03-28 10:06:58.066
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2023-03-28 10:06:58.067
+!MESSAGE Log4j2 initialized with config file /home/breno/OpenPDM/Software/.metadata/.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-03-28 10:07:00.110
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2023-03-28 10:08:44.822
+!MESSAGE Indexed 'stm32f103c8t6_v0.1' (23 sources, 82 headers) in 2.37 sec: 4,633 declarations; 24,664 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0068%)
