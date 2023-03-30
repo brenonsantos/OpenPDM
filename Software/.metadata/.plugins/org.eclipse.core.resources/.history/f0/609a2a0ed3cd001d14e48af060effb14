@@ -1,0 +1,46 @@
+/*
+ * opdm_hal_io.h
+ *
+ *  Created on: Mar 21, 2023
+ *      Author: breno
+ */
+
+#ifndef __OPDM_DRIVER_OPDM_HAL_IO_H_
+#define __OPDM_DRIVER_OPDM_HAL_IO_H_
+
+#include "stm32f1xx_hal.h"
+#include "opdm_hal_io_cfg.h"
+
+
+
+
+typedef enum{
+	HC0_OUTPUT = 0,
+	HC1_OUTPUT,
+	HC2_OUTPUT,
+	HC3_OUTPUT,
+	NUM_OF_HC_OUTPUTS
+}HIGH_CURRENT_OUTPUT_TYPE;
+
+typedef enum{
+	LC0_OUTPUT = 0,
+	LC1_OUTPUT,
+	LC2_OUTPUT,
+	LC3_OUTPUT,
+	NUM_OF_LC_OUTPUTS
+}LOW_CURRENT_OUTPUT_TYPE;
+
+typedef enum{
+	GENERIC_INPUT_0 = 0,
+	GENERIC_INPUT_1,
+	GENERIC_INPUT_2,
+	GENERIC_INPUT_3,
+	GENERIC_INPUT_4,
+	GENERIC_INPUT_5,
+	GENERIC_INPUT_6,
+	GENERIC_INPUT_7,
+	NUM_OF_GENERIC_INPUTS
+}GENERIC_INPUT_TYPE;
+
+/* OPDM_DRIVER_OPDM_HAL_IO_H_ */
+#endif 

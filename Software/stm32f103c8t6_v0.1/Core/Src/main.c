@@ -104,6 +104,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_GPIO_TogglePin(INTERNAL_LED_GPIO_Port, INTERNAL_LED_Pin);
+	  HAL_Delay(3000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -297,49 +299,63 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, INTERNAL_LED_Pin|MUX_INPUTS_A1_Pin|MUX_INPUTS_A2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, STATUS_LED_Pin|GATE_LC0_SIG_Pin|GATE_LC1_SIG_Pin|GATE_LC2_SIG_Pin
+                          |GATE_LC3_SIG_Pin|CANC_INTERRUPT_Pin|CANB_STB_Pin|MUX_CUR_SENSE_A3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_10|GPIO_PIN_11
-                          |GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GATE_HC1_SIG_Pin|GATE_HC0_SIG_Pin|GATE_HC3_SIG_Pin|GATE_HC2_SIG_Pin
+                          |MUX_CUR_SENSE_A2_Pin|MUX_CUR_SENSE_A1_Pin|MUX_CUR_SENSE_A0_Pin|CANB_EN_Pin
+                          |MUX_INPUTS_A0_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PC13 PC14 PC15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+  /*Configure GPIO pin : INTERNAL_LED_Pin */
+  GPIO_InitStruct.Pin = INTERNAL_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(INTERNAL_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : MUX_INPUTS_A1_Pin MUX_INPUTS_A2_Pin */
+  GPIO_InitStruct.Pin = MUX_INPUTS_A1_Pin|MUX_INPUTS_A2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA3 PA4 PA5 PA6
-                           PA7 PA8 PA10 PA15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_15;
+  /*Configure GPIO pins : STATUS_LED_Pin GATE_LC0_SIG_Pin GATE_LC1_SIG_Pin GATE_LC2_SIG_Pin
+                           GATE_LC3_SIG_Pin CANC_INTERRUPT_Pin MUX_CUR_SENSE_A3_Pin */
+  GPIO_InitStruct.Pin = STATUS_LED_Pin|GATE_LC0_SIG_Pin|GATE_LC1_SIG_Pin|GATE_LC2_SIG_Pin
+                          |GATE_LC3_SIG_Pin|CANC_INTERRUPT_Pin|MUX_CUR_SENSE_A3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB0 PB1 PB10 PB11
-                           PB3 PB4 PB5 PB6
-                           PB7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_10|GPIO_PIN_11
-                          |GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7;
+  /*Configure GPIO pins : GATE_HC1_SIG_Pin GATE_HC0_SIG_Pin GATE_HC3_SIG_Pin GATE_HC2_SIG_Pin
+                           MUX_CUR_SENSE_A2_Pin MUX_CUR_SENSE_A1_Pin MUX_CUR_SENSE_A0_Pin CANB_EN_Pin
+                           MUX_INPUTS_A0_Pin */
+  GPIO_InitStruct.Pin = GATE_HC1_SIG_Pin|GATE_HC0_SIG_Pin|GATE_HC3_SIG_Pin|GATE_HC2_SIG_Pin
+                          |MUX_CUR_SENSE_A2_Pin|MUX_CUR_SENSE_A1_Pin|MUX_CUR_SENSE_A0_Pin|CANB_EN_Pin
+                          |MUX_INPUTS_A0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  /*Configure GPIO pin : CANB_ERR_Pin */
+  GPIO_InitStruct.Pin = CANB_ERR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(CANB_ERR_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CANB_STB_Pin */
+  GPIO_InitStruct.Pin = CANB_STB_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(CANB_STB_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

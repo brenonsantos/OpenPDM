@@ -1,0 +1,7 @@
+stm32f1xx_hal_msp.c:63:6:HAL_MspInit	1
+stm32f1xx_hal_msp.c:89:6:HAL_ADC_MspInit	2
+stm32f1xx_hal_msp.c:122:6:HAL_ADC_MspDeInit	2
+stm32f1xx_hal_msp.c:151:6:HAL_CAN_MspInit	2
+stm32f1xx_hal_msp.c:192:6:HAL_CAN_MspDeInit	2
+stm32f1xx_hal_msp.c:221:6:HAL_SPI_MspInit	2
+stm32f1xx_hal_msp.c:262:6:HAL_SPI_MspDeInit	2

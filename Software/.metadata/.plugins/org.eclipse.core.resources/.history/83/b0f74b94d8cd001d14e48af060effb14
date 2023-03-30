@@ -1,0 +1,50 @@
+/*
+ * opdm_hal_io.c
+ *
+ *  Created on: Mar 28, 2023
+ *      Author: breno
+ */
+
+
+#include "opdm_hal_io.h"
+
+
+
+
+
+
+
+
+
+
+//-------------------- Defines --------------------
+
+typedef struct{
+	GPIO_TypeDef port;
+	uint16_t pin;
+}OPDM_GPIO_TYPE;
+
+OPDM_GPIO_TYPE HIGH_CURRENT_OUTPUT[NUM_OF_HC_OUTPUTS] = {
+        {GATE_HC0_SIG_GPIO_Port, GATE_HC0_SIG_Pin},
+        {GATE_HC1_SIG_GPIO_Port, GATE_HC1_SIG_Pin},
+        {GATE_HC2_SIG_GPIO_Port, GATE_HC2_SIG_Pin},
+        {GATE_HC3_SIG_GPIO_Port, GATE_HC3_SIG_Pin},
+};
+
+OPDM_GPIO_TYPE LOW_CURRENT_OUTPUT[NUM_OF_LC_OUTPUTS] = {
+        {{GATE_LC0_SIG_GPIO_Port, GATE_LC0_SIG_Pin}},
+        {{GATE_LC1_SIG_GPIO_Port, GATE_LC1_SIG_Pin}},
+        {{GATE_LC2_SIG_GPIO_Port, GATE_LC2_SIG_Pin}},
+        {{GATE_LC3_SIG_GPIO_Port, GATE_LC3_SIG_Pin}},
+};
+
+// OPDM_GPIO_TYPE GENERIC_INPUT[NUM_OF_GENERIC_INPUTS] = {
+//         {GENERIC_INPUT_0_GPIO_Port, GENERIC_INPUT_0_Pin},
+//         {GENERIC_INPUT_1_GPIO_Port, GENERIC_INPUT_1_Pin},
+//         {GENERIC_INPUT_2_GPIO_Port, GENERIC_INPUT_2_Pin},
+//         {GENERIC_INPUT_3_GPIO_Port, GENERIC_INPUT_3_Pin},
+//         {GENERIC_INPUT_4_GPIO_Port, GENERIC_INPUT_4_Pin},
+//         {GENERIC_INPUT_5_GPIO_Port, GENERIC_INPUT_5_Pin},
+//         {GENERIC_INPUT_6_GPIO_Port, GENERIC_INPUT_6_Pin},
+//         {GENERIC_INPUT_7_GPIO_Port, GENERIC_INPUT_7_Pin}
+// };
