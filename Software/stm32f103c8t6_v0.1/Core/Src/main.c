@@ -97,14 +97,17 @@ int main(void)
   MX_CAN_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+  initialize_current_outputs();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_GPIO_TogglePin(INTERNAL_LED_GPIO_Port, INTERNAL_LED_Pin);
+
+	  PDM_SetCurrentOutput(0);
+	  HAL_Delay(3000);
+	  PDM_ResetCurrentOutput(0);
 	  HAL_Delay(3000);
     /* USER CODE END WHILE */
 

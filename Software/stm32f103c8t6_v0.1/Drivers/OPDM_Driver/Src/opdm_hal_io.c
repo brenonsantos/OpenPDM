@@ -6,136 +6,138 @@
  */
 
 #include "opdm_hal_io.h"
-
+#include <string.h>
 //-------------------- Defines --------------------
-
-typedef struct
-{
-        GPIO_TypeDef port;
-        uint16_t pin;
-} OPDM_GPIO_TYPE;
-
-typedef struct
-{
-        OPDM_GPIO_TYPE port_n_pin;
-
-        uint8_t enable;
-        uint8_t fault;
-
-        float current_reading;
-        float voltage_reading;
-
-        float current_setpoint;
-        float max_current;
-        float min_voltage;
-        float max_voltage;
-
-
-}OPDM_CURRENT_OUTPUT_TYPE;
-
-OPDM_CURRENT_OUTPUT_TYPE CURRENT_OUTPUT[NUM_OF_LC_OUTPUTS + NUM_OF_HC_OUTPUTS];
-
-// TODO: Is it really necessary to separate the high and low current outputs? Same in opdm_hal_io.h
-/*
-OPDM_GPIO_TYPE HIGH_CURRENT_OUTPUT[NUM_OF_HC_OUTPUTS] = {
-        {{GATE_HC0_SIG_GPIO_Port, GATE_HC0_SIG_Pin}},
-        {{GATE_HC1_SIG_GPIO_Port, GATE_HC1_SIG_Pin}},
-        {{GATE_HC2_SIG_GPIO_Port, GATE_HC2_SIG_Pin}},
-        {{GATE_HC3_SIG_GPIO_Port, GATE_HC3_SIG_Pin}},
-};
-
-OPDM_GPIO_TYPE LOW_CURRENT_OUTPUT[NUM_OF_LC_OUTPUTS] = {
-        {{GATE_LC0_SIG_GPIO_Port, GATE_LC0_SIG_Pin}},
-        {{GATE_LC1_SIG_GPIO_Port, GATE_LC1_SIG_Pin}},
-        {{GATE_LC2_SIG_GPIO_Port, GATE_LC2_SIG_Pin}},
-        {{GATE_LC3_SIG_GPIO_Port, GATE_LC3_SIG_Pin}},
-};
-*/
-
-OPDM_GPIO_TYPE CURRENT_OUTPUT_GPIO[NUM_OF_CURRENT_OUTPUTS] = {
-    {{GATE_HC0_SIG_GPIO_Port, GATE_HC0_SIG_Pin}},
-    {{GATE_HC1_SIG_GPIO_Port, GATE_HC1_SIG_Pin}},
-    {{GATE_HC2_SIG_GPIO_Port, GATE_HC2_SIG_Pin}},
-    {{GATE_HC3_SIG_GPIO_Port, GATE_HC3_SIG_Pin}},
-    {{GATE_LC0_SIG_GPIO_Port, GATE_LC0_SIG_Pin}},
-    {{GATE_LC1_SIG_GPIO_Port, GATE_LC1_SIG_Pin}},
-    {{GATE_LC2_SIG_GPIO_Port, GATE_LC2_SIG_Pin}},
-    {{GATE_LC3_SIG_GPIO_Port, GATE_LC3_SIG_Pin}},
-};
-
-uint8_t CURRENT_OUTPUT_ENABLE[NUM_OF_CURRENT_OUTPUTS] = {
-        HC0_EN,
-        HC1_EN,
-        HC2_EN,
-        HC3_EN,
-        LC0_EN,
-        LC1_EN,
-        LC2_EN,
-        LC3_EN,
-};
 
 
 OPDM_GPIO_TYPE CURRENT_VOLTAGE_SENSE_MUTIPLEXER[NUM_OF_CURRENT_VOLTAGE_SENSE_MULTIPLEXER] = {
-    {{MUX_CUR_SENSE_A0_GPIO_Port, MUX_CUR_SENSE_A0_Pin}},
-    {{MUX_CUR_SENSE_A1_GPIO_Port, MUX_CUR_SENSE_A1_Pin}},
-    {{MUX_CUR_SENSE_A2_GPIO_Port, MUX_CUR_SENSE_A2_Pin}},
-    {{MUX_CUR_SENSE_A3_GPIO_Port, MUX_CUR_SENSE_A3_Pin}},
+    {MUX_CUR_SENSE_A0_GPIO_Port, MUX_CUR_SENSE_A0_Pin},
+    {MUX_CUR_SENSE_A1_GPIO_Port, MUX_CUR_SENSE_A1_Pin},
+    {MUX_CUR_SENSE_A2_GPIO_Port, MUX_CUR_SENSE_A2_Pin},
+    {MUX_CUR_SENSE_A3_GPIO_Port, MUX_CUR_SENSE_A3_Pin},
 };
 
-// OPDM_GPIO_TYPE GENERIC_INPUT[NUM_OF_GENERIC_INPUTS] = {
-//         {GENERIC_INPUT_0_GPIO_Port, GENERIC_INPUT_0_Pin},
-//         {GENERIC_INPUT_1_GPIO_Port, GENERIC_INPUT_1_Pin},
-//         {GENERIC_INPUT_2_GPIO_Port, GENERIC_INPUT_2_Pin},
-//         {GENERIC_INPUT_3_GPIO_Port, GENERIC_INPUT_3_Pin},
-//         {GENERIC_INPUT_4_GPIO_Port, GENERIC_INPUT_4_Pin},
-//         {GENERIC_INPUT_5_GPIO_Port, GENERIC_INPUT_5_Pin},
-//         {GENERIC_INPUT_6_GPIO_Port, GENERIC_INPUT_6_Pin},
-//         {GENERIC_INPUT_7_GPIO_Port, GENERIC_INPUT_7_Pin}
-// };
 
+
+OPDM_CURRENT_OUTPUT_SETUP_STRUCT CURRENT_OUTPUT_SETUP[NUM_OF_CURRENT_OUTPUTS];
+
+OPDM_CURRENT_OUTPUT_CONTROL_STRUCT CURRENT_OUTPUT_CONTROL[NUM_OF_CURRENT_OUTPUTS];
 
 void initialize_current_outputs(){
+    
+    // 
+    OPDM_GPIO_TYPE CURRENT_OUTPUT_GPIO[NUM_OF_CURRENT_OUTPUTS] = {
+            {GATE_HC0_SIG_GPIO_Port, GATE_HC0_SIG_Pin},
+            {GATE_HC1_SIG_GPIO_Port, GATE_HC1_SIG_Pin},
+            {GATE_HC2_SIG_GPIO_Port, GATE_HC2_SIG_Pin},
+            {GATE_HC3_SIG_GPIO_Port, GATE_HC3_SIG_Pin},
+            {GATE_LC0_SIG_GPIO_Port, GATE_LC0_SIG_Pin},
+            {GATE_LC1_SIG_GPIO_Port, GATE_LC1_SIG_Pin},
+            {GATE_LC2_SIG_GPIO_Port, GATE_LC2_SIG_Pin},
+            {GATE_LC3_SIG_GPIO_Port, GATE_LC3_SIG_Pin},
+            };
+
+    uint8_t OUTPUT_ENABLE_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_EN, HC1_EN, HC2_EN, HC3_EN,
+            LC0_EN, LC1_EN, LC2_EN, LC3_EN
+    };
+
+    char OUTPUT_LABEL_CFG[NUM_OF_CURRENT_OUTPUTS][MAX_OUTPUT_LABEL_SIZE] = {
+            HC0_LABEL, HC1_LABEL, HC2_LABEL, HC3_LABEL,
+            LC0_LABEL, LC1_LABEL, LC2_LABEL, LC3_LABEL
+    };
+
+    uint8_t OUTPUT_RESET_ENABLE_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_RESET_ENABLE, HC1_RESET_ENABLE, HC2_RESET_ENABLE, HC3_RESET_ENABLE,
+            LC0_RESET_ENABLE, LC1_RESET_ENABLE, LC2_RESET_ENABLE, LC3_RESET_ENABLE
+    };
+
+    int OUTPUT_RESET_RETRY_DELAY_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_RESET_RETRY_DELAY, HC1_RESET_RETRY_DELAY, HC2_RESET_RETRY_DELAY, HC3_RESET_RETRY_DELAY,
+            LC0_RESET_RETRY_DELAY, LC1_RESET_RETRY_DELAY, LC2_RESET_RETRY_DELAY, LC3_RESET_RETRY_DELAY,
+    };
+
+    int OUTPUT_INRUSH_TIME_LIMIT_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_INRUSH_TIME_LIMIT, HC1_INRUSH_TIME_LIMIT, HC2_INRUSH_TIME_LIMIT, HC3_INRUSH_TIME_LIMIT,
+            LC0_INRUSH_TIME_LIMIT, LC1_INRUSH_TIME_LIMIT, LC2_INRUSH_TIME_LIMIT, LC3_INRUSH_TIME_LIMIT
+    };
+
+    int OUTPUT_RESET_RETRY_COUNT_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_RESET_RETRY_COUNT, HC1_RESET_RETRY_COUNT, HC2_RESET_RETRY_COUNT, HC3_RESET_RETRY_COUNT,
+            LC0_RESET_RETRY_COUNT, LC1_RESET_RETRY_COUNT, LC2_RESET_RETRY_COUNT, LC3_RESET_RETRY_COUNT
+    };
+
+    float OUTPUT_MAX_CCURRENT_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_MAX_CURRENT, HC1_MAX_CURRENT, HC2_MAX_CURRENT, HC3_MAX_CURRENT,
+            LC0_MAX_CURRENT, LC1_MAX_CURRENT, LC2_MAX_CURRENT, LC3_MAX_CURRENT
+    };
+
+    float OUTPUT_MIN_VOLTAGE_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_MIN_VOLTAGE, HC1_MIN_VOLTAGE, HC2_MIN_VOLTAGE, HC3_MIN_VOLTAGE,
+            LC0_MIN_VOLTAGE, LC1_MIN_VOLTAGE, LC2_MIN_VOLTAGE, LC3_MIN_VOLTAGE
+    };
+            
+    float OUTPUT_MAX_VOLTAGE_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_MAX_VOLTAGE, HC1_MAX_VOLTAGE, HC2_MAX_VOLTAGE, HC3_MAX_VOLTAGE,
+            LC0_MAX_VOLTAGE, LC1_MAX_VOLTAGE, LC2_MAX_VOLTAGE, LC3_MAX_VOLTAGE
+    };
+
+    float OUTPUT_CURRENT_SETPOINT_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_CURRENT_SETPOINT, HC1_CURRENT_SETPOINT, HC2_CURRENT_SETPOINT, HC3_CURRENT_SETPOINT,
+            LC0_CURRENT_SETPOINT, LC1_CURRENT_SETPOINT, LC2_CURRENT_SETPOINT, LC3_CURRENT_SETPOINT
+    };
+
+    static const condition_t OUTPUT_CONDITION_CFG[NUM_OF_CURRENT_OUTPUTS] = {
+            HC0_OUTPUT_CONDITION, HC1_OUTPUT_CONDITION, HC2_OUTPUT_CONDITION, HC3_OUTPUT_CONDITION,
+            LC0_OUTPUT_CONDITION, LC1_OUTPUT_CONDITION, LC2_OUTPUT_CONDITION, LC3_OUTPUT_CONDITION
+    };
+
+    for(int i = 0; i < NUM_OF_CURRENT_OUTPUTS; i++){
+        if (OUTPUT_INRUSH_TIME_LIMIT_CFG[i] > GLOBAL_INRUSH_TIME_LIMIT){
+            OUTPUT_INRUSH_TIME_LIMIT_CFG[i] = GLOBAL_INRUSH_TIME_LIMIT;
+        }
+        if (OUTPUT_MAX_VOLTAGE_CFG[i] > GLOBAL_MAX_VOLTAGE){
+            OUTPUT_MAX_VOLTAGE_CFG[i] = GLOBAL_MAX_VOLTAGE;
+        }
+
+        if (OUTPUT_MIN_VOLTAGE_CFG[i] < GLOBAL_MIN_VOLTAGE){
+            OUTPUT_MIN_VOLTAGE_CFG[i] = GLOBAL_MIN_VOLTAGE;
+        }
+
+        if (OUTPUT_INRUSH_TIME_LIMIT_CFG[i] > GLOBAL_INRUSH_TIME_LIMIT){
+            OUTPUT_INRUSH_TIME_LIMIT_CFG[i] = GLOBAL_INRUSH_TIME_LIMIT;
+        }
+
+        CURRENT_OUTPUT_SETUP[i].gpio_addr = CURRENT_OUTPUT_GPIO[i];
+        strcpy(CURRENT_OUTPUT_SETUP[i].output_label, OUTPUT_LABEL_CFG[i]);
+        CURRENT_OUTPUT_SETUP[i].output_enable = OUTPUT_ENABLE_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].reset_enable = OUTPUT_RESET_ENABLE_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].inrush_time_limit = OUTPUT_INRUSH_TIME_LIMIT_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].reset_retry_delay = OUTPUT_RESET_RETRY_DELAY_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].reset_retry_count = OUTPUT_RESET_RETRY_COUNT_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].current_setpoint = OUTPUT_CURRENT_SETPOINT_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].max_current = OUTPUT_MAX_CCURRENT_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].min_voltage = OUTPUT_MIN_VOLTAGE_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].max_voltage = OUTPUT_MAX_VOLTAGE_CFG[i];
+        CURRENT_OUTPUT_SETUP[i].condition_callback = OUTPUT_CONDITION_CFG[i];
+
+        CURRENT_OUTPUT_CONTROL[i].output_state = FALSE;
+        CURRENT_OUTPUT_CONTROL[i].fault = FALSE;
+        CURRENT_OUTPUT_CONTROL[i].fault_buffer = FALSE;
+        CURRENT_OUTPUT_CONTROL[i].current_reading = 0.0;
+        CURRENT_OUTPUT_CONTROL[i].voltage_reading = 0.0;
+        CURRENT_OUTPUT_CONTROL[i].current_setpoint = 0.0;
+        CURRENT_OUTPUT_CONTROL[i].inrush_timer = 0;
+        CURRENT_OUTPUT_CONTROL[i].retry_attempts = 0;
+
         
-        initialize_high_current_outputs();
-        initialize_low_current_outputs();
+    }
 }
 
-void initialize_high_current_outputs(){
-        for(int i = 0; i < NUM_OF_HC_OUTPUTS; i++){
-                CURRENT_OUTPUT[i].port_n_pin = CURRENT_OUTPUT_GPIO[i];
-                CURRENT_OUTPUT[i].enable = CURRENT_OUTPUT_ENABLE[i];
-                CURRENT_OUTPUT[i].fault = FALSE;
-                CURRENT_OUTPUT[i].current_reading = 0.0;
-                CURRENT_OUTPUT[i].voltage_reading = 0.0;
-                CURRENT_OUTPUT[i].current_setpoint = 0.0;
-                CURRENT_OUTPUT[i].max_current = HC_MAX_CURRENT;
-                CURRENT_OUTPUT[i].min_voltage = HC_MIN_VOLTAGE;
-                CURRENT_OUTPUT[i].max_voltage = HC_MAX_VOLTAGE;
-        }
+void PDM_SetCurrentOutput(CURRENT_OUTPUT_TYPE output){
+        HAL_GPIO_WritePin(CURRENT_OUTPUT_SETUP[output].gpio_addr.port, CURRENT_OUTPUT_SETUP[output].gpio_addr.pin, GPIO_PIN_SET);
 }
 
-void initialize_low_current_outputs(){
-        for(int i = NUM_OF_HC_OUTPUTS; i < NUM_OF_LC_OUTPUTS; i++){
-                CURRENT_OUTPUT[i].port_n_pin = CURRENT_OUTPUT_GPIO[i];
-                CURRENT_OUTPUT[i].enable = CURRENT_OUTPUT_ENABLE[i];
-                CURRENT_OUTPUT[i].fault = FALSE;
-                CURRENT_OUTPUT[i].current_reading = 0.0;
-                CURRENT_OUTPUT[i].voltage_reading = 0.0;
-                CURRENT_OUTPUT[i].current_setpoint = 0.0;
-                CURRENT_OUTPUT[i].max_current = LC_MAX_CURRENT;
-                CURRENT_OUTPUT[i].min_voltage = LC_MIN_VOLTAGE;
-                CURRENT_OUTPUT[i].max_voltage = LC_MAX_VOLTAGE;
-        }
+void PDM_ResetCurrentOutput(CURRENT_OUTPUT_TYPE output){
+        HAL_GPIO_WritePin(CURRENT_OUTPUT_SETUP[output].gpio_addr.port, CURRENT_OUTPUT_SETUP[output].gpio_addr.pin, GPIO_PIN_RESET);
 }
-
-
-void PDM_SetCurrentOutput(CURRENT_OUTPUT_TYPE output)
-{
-        HAL_GPIO_WritePin(CURRENT_OUTPUT[output].port, CURRENT_OUTPUT[output].pin, GPIO_PIN_SET);
-}
-
-void PDM_ResetCurrentOutput(CURRENT_OUTPUT_TYPE output)
-{
-        HAL_GPIO_WritePin(CURRENT_OUTPUT[output].port, CURRENT_OUTPUT[output].pin, GPIO_PIN_RESET);
-}
-

@@ -65,14 +65,7 @@
 
 
 //----------------- OUTPUT ENABLES -----------------
-#define HC0_EN TRUE
-#define HC1_EN TRUE
-#define HC2_EN TRUE
-#define HC3_EN TRUE
-#define LC0_EN TRUE
-#define LC1_EN TRUE
-#define LC2_EN TRUE
-#define LC3_EN TRUE
+
 
 
 
