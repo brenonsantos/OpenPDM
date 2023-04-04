@@ -5,11 +5,10 @@
  *      Author: breno
  */
 
-#ifndef __OPDM_OUTPUT_CFG_H_
-#define __OPDM_OUTPUT_CFG_H_
+#ifndef __OPDM_CFG_H_
+#define __OPDM_CFG_H_
 
-#define TRUE 1
-#define FALSE 0
+#include "c_types.h"
 
 //----------------- OUTPUT CONFIGURATION -----------------
 
@@ -21,7 +20,7 @@
 #define GLOBAL_INRUSH_TIME_LIMIT 2000
 #define GLOBAL_TOTAL_CURRENT_LIMIT 50.0
 
-#define MAX_OUTPUT_LABEL_SIZE 4
+#define MAX_IO_LABEL_SIZE 4
 
 #define HC0_EN TRUE
 #define HC0_LABEL "HC0"
@@ -35,7 +34,7 @@
 #define HC0_MAX_CURRENT 10.0
 
 #define HC1_EN TRUE
-#define HC1_LABEL "HC1"
+#define HC1_LABEL "HC1" 
 #define HC1_RESET_ENABLE FALSE
 #define HC1_RESET_RETRY_COUNT 3
 #define HC1_RESET_RETRY_DELAY 2000
@@ -112,6 +111,41 @@
 #define LC3_MAX_CURRENT 10.0
 
 
+
+//----------------- INPUT CONFIGURATION -----------------
+#define INPUT0_EN TRUE
+#define INPUT0_LABEL "IN0"
+#define INPUT0_TYPE DIGITAL_ACTIVE_H
+
+#define INPUT1_EN TRUE
+#define INPUT1_LABEL "IN1"
+#define INPUT1_TYPE DIGITAL_ACTIVE_H
+
+#define INPUT2_EN TRUE
+#define INPUT2_LABEL "IN2"
+#define INPUT2_TYPE DIGITAL_ACTIVE_H
+
+#define INPUT3_EN TRUE
+#define INPUT3_LABEL "IN3"
+#define INPUT3_TYPE DIGITAL_ACTIVE_H
+
+#define INPUT4_EN TRUE
+#define INPUT4_LABEL "IN4"
+#define INPUT4_TYPE DIGITAL_ACTIVE_H
+
+#define INPUT5_EN TRUE
+#define INPUT5_LABEL "IN5"
+#define INPUT5_TYPE DIGITAL_ACTIVE_H
+
+#define INPUT6_EN TRUE
+#define INPUT6_LABEL "IN6"
+#define INPUT6_TYPE DIGITAL_ACTIVE_H
+
+#define INPUT7_EN TRUE
+#define INPUT7_LABEL "IN7"
+#define INPUT7_TYPE DIGITAL_ACTIVE_H
+
+
 typedef char (*condition_t)(void);
 
 char HC0_OUTPUT_CONDITION(void);
@@ -123,15 +157,6 @@ char LC0_OUTPUT_CONDITION(void);
 char LC1_OUTPUT_CONDITION(void);
 char LC2_OUTPUT_CONDITION(void);
 char LC3_OUTPUT_CONDITION(void);
-
-
-
-
-
-
-
-
-
 
 
 #endif /* __OPDM_OUTPUT_CFG_H_ */

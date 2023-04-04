@@ -9,12 +9,8 @@
 #define __OPDM_HAL_IO_CFG_H_
 
 
-#define ENABLE 1
-#define DISABLE 0
 
-#define TRUE 1
-#define FALSE 0
-
+#include "opdm_cfg.h"
 
 
 // ----------------- GPIO Defines -----------------

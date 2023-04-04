@@ -5,7 +5,7 @@
  *      Author: breno
  */
 
-#include "opdm_output_cfg.h"
+#include "opdm_cfg.h"
 
 // TODO: this is a temporary solution. Probably it shouldn't receive void, but the CAN messages and the inputs readings.
 

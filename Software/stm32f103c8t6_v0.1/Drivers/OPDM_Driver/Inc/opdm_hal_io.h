@@ -10,30 +10,12 @@
 
 #include "stm32f1xx_hal.h"
 #include "opdm_hal_io_cfg.h"
-#include "opdm_output_cfg.h"
+
 
 
 
 //----------------- ENUMS -----------------
 
-// TODO: Is it really necessary to separate the high and low current outputs?
-/*
-typedef enum{
-	HC0_OUTPUT = 0,
-	HC1_OUTPUT,
-	HC2_OUTPUT,
-	HC3_OUTPUT,
-	NUM_OF_HC_OUTPUTS
-}HIGH_CURRENT_OUTPUT_TYPE;
-
-typedef enum{
-	LC0_OUTPUT = 0,
-	LC1_OUTPUT,
-	LC2_OUTPUT,
-	LC3_OUTPUT,
-	NUM_OF_LC_OUTPUTS
-}LOW_CURRENT_OUTPUT_TYPE;
-*/
 typedef enum{
 	HC0_OUTPUT = 0,
 	HC1_OUTPUT,
@@ -48,17 +30,17 @@ typedef enum{
 
 // #define NUM_OF_CURRENT_OUTPUTS (NUM_OF_HC_OUTPUTS + NUM_OF_LC_OUTPUTS)
 
-// typedef enum{
-// 	GENERIC_INPUT_0 = 0,
-// 	GENERIC_INPUT_1,
-// 	GENERIC_INPUT_2,
-// 	GENERIC_INPUT_3,
-// 	GENERIC_INPUT_4,
-// 	GENERIC_INPUT_5,
-// 	GENERIC_INPUT_6,
-// 	GENERIC_INPUT_7,
-// 	NUM_OF_GENERIC_INPUTS
-// }GENERIC_INPUT_TYPE;
+typedef enum{
+	ANALOG_DIGITAL_INPUT_0 = 0,
+	ANALOG_DIGITAL_INPUT_1,
+	ANALOG_DIGITAL_INPUT_2,
+	ANALOG_DIGITAL_INPUT_3,
+	ANALOG_DIGITAL_INPUT_4,
+	ANALOG_DIGITAL_INPUT_5,
+	ANALOG_DIGITAL_INPUT_6,
+	ANALOG_DIGITAL_INPUT_7,
+	NUM_OF_AD_INPUTS
+}ANALOG_DIGITAL_INPUT_TYPE
 
 
 typedef enum{
@@ -97,31 +79,42 @@ typedef enum{
 typedef struct
 {
 	GPIO_TypeDef *port;
-        uint16_t pin;
+    uint16_t pin;
 } OPDM_GPIO_TYPE;
 
 
 typedef struct{
-        OPDM_GPIO_TYPE gpio_addr;
+	OPDM_GPIO_TYPE gpio_addr;
 
-		char output_label[MAX_OUTPUT_LABEL_SIZE];
+	char output_label[MAX_IO_LABEL_SIZE];
 
-        uint8_t output_enable;
-        uint8_t reset_enable;
-        // uint8_t pwm_enable;
-        // OPDM_OUTPUT_PWM_TYPE pwm;
-        int inrush_time_limit;
-        int reset_retry_delay;
-        int reset_retry_count;
-        
-        float current_setpoint;
-        float max_current;
-        float min_voltage;
-        float max_voltage;
+	uint8_t output_enable;
+	uint8_t reset_enable;
+	// uint8_t pwm_enable;
+	// OPDM_OUTPUT_PWM_TYPE pwm;
+	int inrush_time_limit;
+	int reset_retry_delay;
+	int reset_retry_count;
+	
+	float current_setpoint;
+	float max_current;
+	float min_voltage;
+	float max_voltage;
 
-        condition_t condition_callback;
+	condition_t condition_callback;
 
 }OPDM_CURRENT_OUTPUT_SETUP_STRUCT;
+
+
+typedef struct{
+	ANALOG_DIGITAL_INPUT_TYPE position;
+	char label[MAX_IO_LABEL_SIZE];
+	uint8_t enable;
+	uint8_t state;
+	OPDM_INPUT_TYPE input_type;
+}OPDM_INPUT_STRUCT;
+
+
 
 
 
@@ -138,14 +131,14 @@ typedef struct{
   * @param  fault_buffer:
   */
 typedef struct{
-        uint8_t output_state;
-        uint8_t fault;
-        uint8_t fault_buffer;
-        float current_reading;
-        float voltage_reading;
-        float current_setpoint;
-        float inrush_timer;
-        int retry_attempts;
+	uint8_t output_state;
+	uint8_t fault;
+	uint8_t fault_buffer;
+	float current_reading;
+	float voltage_reading;
+	float current_setpoint;
+	float inrush_timer;
+	int retry_attempts;
 }OPDM_CURRENT_OUTPUT_CONTROL_STRUCT;
 
 void PDM_SetCurrentOutput(CURRENT_OUTPUT_TYPE output);
