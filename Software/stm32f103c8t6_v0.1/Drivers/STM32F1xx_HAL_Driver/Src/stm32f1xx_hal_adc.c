@@ -1186,6 +1186,7 @@ HAL_StatusTypeDef HAL_ADC_Stop(ADC_HandleTypeDef* hadc)
   return tmp_hal_status;
 }
 
+
 /**
   * @brief  Wait for regular group conversion to be completed.
   * @note   This function cannot be used in a particular setup: ADC configured 

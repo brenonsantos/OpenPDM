@@ -1,0 +1,58 @@
+/*
+ * opdm_hal_adc.h
+ *
+ *  Created on: 26 de abr de 2023
+ *      Author: breno
+ */
+
+#ifndef OPDM_DRIVER_INC_OPDM_HAL_ADC_H_
+#define OPDM_DRIVER_INC_OPDM_HAL_ADC_H_
+
+
+#include "opdm_hal_def.h"
+
+
+
+
+
+typedef enum{
+	READY = 0,
+	BUSY,
+	CONVERSION_COMPLETE
+}PDMHAL_AdcStatusType;
+
+typedef enum{
+	INPUT_MUX_A0 = 0,
+	INPUT_MUX_A1,
+	INPUT_MUX_A2,
+	NUM_OF_INPUT_MULTIPLEXER
+}INPUT_MULTIPLEXER_OUTPUT_TYPE;
+
+typedef enum{
+	CV_SENSE_MUX_A0 = 0,
+	CV_SENSE_MUX_A1,
+	CV_SENSE_MUX_A2,
+	CV_SENSE_MUX_A3,
+	NUM_OF_CURRENT_VOLTAGE_SENSE_MULTIPLEXER
+}CURRENT_VOLTAGE_SENSE_MULTIPLEXER_OUTPUT_TYPE;
+
+typedef enum{
+	ANALOG_DIGITAL_INPUT_0 = 0,
+	ANALOG_DIGITAL_INPUT_1,
+	ANALOG_DIGITAL_INPUT_2,
+	ANALOG_DIGITAL_INPUT_3,
+	ANALOG_DIGITAL_INPUT_4,
+	ANALOG_DIGITAL_INPUT_5,
+	ANALOG_DIGITAL_INPUT_6,
+	ANALOG_DIGITAL_INPUT_7,
+	NUM_OF_AD_INPUTS
+}ANALOG_DIGITAL_INPUT_TYPE;
+
+PDMHAL_AdcStatusType PDMHAL_ADC_CheckConversionStatusInput(void);
+uint32_t PDMHAL_ADC_ReadInput(void);
+void PDMHAL_ADC_StartNewInputADC(ANALOG_DIGITAL_INPUT_TYPE new_input);
+void PDMHAL_ADC_StartInputADC(void);
+void PDMHAL_ADC_Init(void);
+void hal_adc_teste(void);
+
+#endif /* OPDM_DRIVER_INC_OPDM_HAL_ADC_H_ */
