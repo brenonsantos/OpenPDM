@@ -111,18 +111,6 @@ int main(void)
   {
 	  SVC_AD_UpdateADInputs();
 
-//	  ADC_STATE = PDM_TestAdcState();
-//	  if (PDM_TestAdcState() == HAL_ADC_STATE_BUSY_INTERNAL){
-//		  ADC_STATE = 10;
-//	  }else if(PDM_TestAdcState() == HAL_ADC_STATE_REG_EOC){
-//		  ADC_STATE = 11;
-//	  }
-
-
-//	  PDM_SetCurrentOutput(0);
-//	  HAL_Delay(3000);
-//	  PDM_ResetCurrentOutput(0);
-//	  HAL_Delay(3000);
 
     /* USER CODE END WHILE */
 
