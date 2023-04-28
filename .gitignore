@@ -1,3 +1,6 @@
 .venv
-Software/.metadata
-Software/stm32f103c8t6_v0.1/Debug
+Software/.metadata/
+Software/stm32f103c8t6_v0.1/Debug/
+Hardware/PCB_v0.1/OPDM-backups/
+Software/stm32f103c8t6_v0.1/.settings/
+
