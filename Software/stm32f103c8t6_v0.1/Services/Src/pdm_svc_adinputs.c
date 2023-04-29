@@ -1,7 +1,7 @@
 
 
 #include "pdm_svc_adinputs.h"
-#include <string.h>
+//#include <string.h>
 
 OPDM_INPUT_STRUCT AD_INPUTS[NUM_OF_AD_INPUTS];
 
@@ -53,7 +53,7 @@ ANALOG_DIGITAL_INPUT_TYPE getNextEnabledInput(ANALOG_DIGITAL_INPUT_TYPE current_
 
 
 void SVC_AD_UpdateADInputs(void){ //provavelmente um serviço ou RTE
-	static uint8_t sample_index = 0, first_update_call = TRUE;
+	static uint8_t sample_index = 0;
 	static ANALOG_DIGITAL_INPUT_TYPE current_input = 0;;
 	static uint32_t reading = 0;
 

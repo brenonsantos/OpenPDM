@@ -9,6 +9,7 @@
 #define __SVC_INIT_H_
 
 #include "pdm_svc_adinputs.h"
+#include "pdm_svc_currentoutputs.h"
 
 
 void SVC_Init(void);
