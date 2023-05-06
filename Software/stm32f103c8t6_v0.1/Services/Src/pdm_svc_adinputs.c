@@ -1,13 +1,13 @@
 
 
 #include "pdm_svc_adinputs.h"
-//#include <string.h>
+#include <string.h>
 
 OPDM_INPUT_STRUCT AD_INPUTS[NUM_OF_AD_INPUTS];
 
 void SVC_AD_Inputs_Init(){
 
-	ANALOG_DIGITAL_INPUT_TYPE AD_INPUT_POSITION_CFG[NUM_OF_AD_INPUTS] = {
+	PDMHAL_AnalogInputType AD_INPUT_POSITION_CFG[NUM_OF_AD_INPUTS] = {
 		ANALOG_DIGITAL_INPUT_0, ANALOG_DIGITAL_INPUT_1, ANALOG_DIGITAL_INPUT_2, ANALOG_DIGITAL_INPUT_3,
 		ANALOG_DIGITAL_INPUT_4, ANALOG_DIGITAL_INPUT_5, ANALOG_DIGITAL_INPUT_6, ANALOG_DIGITAL_INPUT_7
 	};
@@ -36,57 +36,47 @@ void SVC_AD_Inputs_Init(){
 	}
 }
 
-uint8_t isAdInputEnable(ANALOG_DIGITAL_INPUT_TYPE input){
+uint8_t isAdInputEnable(PDMHAL_AnalogInputType input){
 	return AD_INPUTS[input].enable;
 }
 
-ANALOG_DIGITAL_INPUT_TYPE getNextEnabledInput(ANALOG_DIGITAL_INPUT_TYPE current_input){
-	for(ANALOG_DIGITAL_INPUT_TYPE i = current_input+1; i < NUM_OF_AD_INPUTS; i++){
+PDMHAL_AnalogInputType getNextEnabledInput(PDMHAL_AnalogInputType current_input){
+	for(PDMHAL_AnalogInputType i = current_input+1; i < NUM_OF_AD_INPUTS; i++){
 		if(isAdInputEnable(i)) return i;
 	}
-	for(ANALOG_DIGITAL_INPUT_TYPE i = 0; i <= current_input; i++){
+	for(PDMHAL_AnalogInputType i = 0; i <= current_input; i++){
 		if(isAdInputEnable(i)) return i;
 	}
 	return 0;
 }
 
-
-
-void SVC_AD_UpdateADInputs(void){ //provavelmente um serviço ou RTE
-	static uint8_t sample_index = 0;
-	static ANALOG_DIGITAL_INPUT_TYPE current_input = 0;;
+void SVC_AD_UpdateADInputs(void){
+	static PDMHAL_AnalogInputType reading_index = 0;
 	static uint32_t reading = 0;
-
-//	if(first_update_call){
-//		current_input = getNextEnabledInput(NUM_OF_AD_INPUTS);
-//		PDMHAL_ADC_StartNewInputADC(current_input);
-//		first_update_call = FALSE;
-//		return;
-//	}
+	static uint32_t moving_average_data[NUM_OF_AD_INPUTS][ADINPUT_WINDOW_SIZE] = {0};
 
 	PDMHAL_AdcStatusType conversion_status = PDMHAL_ADC_CheckConversionStatusInput();
 	switch(conversion_status){
 		case(BUSY):
-			return;
+			break;
 		case(CONVERSION_COMPLETE):
-			reading += PDMHAL_ADC_ReadInput();
+			reading = PDMHAL_ADC_ReadInput();
+			reading = moving_average(moving_average_data[reading_index], reading, ADINPUT_WINDOW_SIZE);
+			AD_INPUTS[reading_index].value = reading;
 
-			/* The final value is a mean of ADC_SAMPLE_COUNT measurements */
-			sample_index++;
-			if(sample_index < ADC_SAMPLE_COUNT){
-				PDMHAL_ADC_StartInputADC();
-				return;
-			}
-			reading = reading/ADC_SAMPLE_COUNT;
-			AD_INPUTS[current_input].value = reading;
-
-			current_input = getNextEnabledInput(current_input);
-			PDMHAL_ADC_StartNewInputADC(current_input);
+			reading_index = getNextEnabledInput(reading_index);
+			PDMHAL_ADC_StartNewInputReading(reading_index);
 			break;
 		case(READY):
-			current_input = getNextEnabledInput(NUM_OF_AD_INPUTS);
-			PDMHAL_ADC_StartNewInputADC(current_input);
+			reading_index = getNextEnabledInput(NUM_OF_AD_INPUTS);
+			PDMHAL_ADC_StartNewInputReading(reading_index);
 			break;
 	}
+}
 
+
+uint32_t SVC_AD_GetADInputValue(PDMHAL_AnalogInputType input){
+	if (!isAdInputEnable(input))
+		return 0;
+    return AD_INPUTS[input].value;
 }

@@ -73,6 +73,7 @@ void SVC_OutputInit(){
             LC0_OUTPUT_CONDITION, LC1_OUTPUT_CONDITION, LC2_OUTPUT_CONDITION, LC3_OUTPUT_CONDITION
     };
 
+
     for(int i = 0; i < NUM_OF_CURRENT_OUTPUTS; i++){
         if (OUTPUT_INRUSH_TIME_LIMIT_CFG[i] > GLOBAL_INRUSH_TIME_LIMIT){
             OUTPUT_INRUSH_TIME_LIMIT_CFG[i] = GLOBAL_INRUSH_TIME_LIMIT;
@@ -109,7 +110,72 @@ void SVC_OutputInit(){
         CURRENT_OUTPUT_CONTROL[i].current_setpoint = 0.0;
         CURRENT_OUTPUT_CONTROL[i].inrush_timer = 0;
         CURRENT_OUTPUT_CONTROL[i].retry_attempts = 0;
-
-
     }
 }
+
+uint8_t isOutputEnable(PDMHAL_OutputType output_addr){
+	return CURRENT_OUTPUT_SETUP[output_addr].output_enable;
+}
+
+PDMHAL_OutputType getNextEnabledOutput(PDMHAL_OutputType current_output){
+	for(PDMHAL_OutputType i = current_output+1; i < NUM_OF_OUTPUTS; i++){
+		if(isOutputEnable(i)) return i;
+	}
+	for(PDMHAL_OutputType i = 0; i <= current_output; i++){
+		if(isOutputEnable(i)) return i;
+	}
+	return 0;
+}
+
+void SVC_OUTPUT_UpdateVoltageAndCurrentSense(void){
+	static PDMHAL_AnalogInputType reading_index = 0;
+	static uint32_t reading = 0;
+	static uint32_t moving_average_data_voltage[NUM_OF_AD_INPUTS][VOLTAGE_WINDOW_SIZE] = {0};
+	static uint32_t moving_average_data_current[NUM_OF_AD_INPUTS][CURRENT_WINDOW_SIZE] = {0};
+    static uint8_t reading_voltage = TRUE;
+
+    PDMHAL_AdcStatusType conversion_status;
+
+    conversion_status = PDMHAL_ADC_CheckConversionStatusVoltage();
+
+	/* As  there is only one mux for both voltage and current sense, 
+	 * only one can be read at a time */
+    if (reading_voltage) {
+        switch(conversion_status){
+            case (READY):
+				reading_index = getNextEnabledOutput(NUM_OF_OUTPUTS);
+				PDMHAL_ADC_StartNewVoltageReading(reading_index);
+				break;
+            case (BUSY):
+                return;
+            case (CONVERSION_COMPLETE):
+				reading = PDMHAL_ADC_ReadOutputVoltage();
+            	reading = moving_average(moving_average_data_voltage[reading_index], reading, VOLTAGE_WINDOW_SIZE);
+				CURRENT_OUTPUT_CONTROL[reading_index].voltage_reading = reading;
+
+				reading_voltage = FALSE;
+				PDMHAL_ADC_StartNewCurrentReading(reading_index);
+				return;
+        }
+    }
+
+	switch(conversion_status){
+	case (READY):
+		reading_voltage = TRUE;
+		return;
+	case (BUSY):
+		return;
+	case (CONVERSION_COMPLETE):
+		reading = PDMHAL_ADC_ReadOutputCurrent();
+		reading = moving_average(moving_average_data_current[reading_index], reading, CURRENT_WINDOW_SIZE);
+		CURRENT_OUTPUT_CONTROL[reading_index].current_reading = reading;
+
+		reading_voltage = TRUE;
+		reading_index = getNextEnabledOutput(reading_index);
+		PDMHAL_ADC_StartNewVoltageReading(reading_index);
+		return;
+	}
+}
+
+
+

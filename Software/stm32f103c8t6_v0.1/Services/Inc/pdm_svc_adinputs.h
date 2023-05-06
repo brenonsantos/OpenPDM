@@ -9,14 +9,11 @@
 #define __SVC_ADINPUTS_H_
 
 //#include "opdm_hal.h"
-#include "opdm_hal_adc.h"
+#include "opdm_hal.h"
 #include "opdm_cfg.h"
 
-#define ADC_SAMPLE_COUNT 3
-
-
 typedef struct{
-	ANALOG_DIGITAL_INPUT_TYPE position;
+	PDMHAL_AnalogInputType position;
 	char label[MAX_IO_LABEL_SIZE];
 	uint8_t enable;
 	uint32_t value;

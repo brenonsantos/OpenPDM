@@ -96,9 +96,11 @@ int main(void)
   MX_SPI2_Init();
 
   /* USER CODE BEGIN 2 */
-  PDMHAL_ADC_Init();
+//  PDMHAL_ADC_Init();
+  PDMHAL_Init();
 //  PDMHAL_ADC_StartInputADC();
   SVC_AD_Inputs_Init();
+  SVC_OutputInit();
 
 
   /* USER CODE END 2 */
@@ -110,6 +112,7 @@ int main(void)
   while (1)
   {
 	  SVC_AD_UpdateADInputs();
+	  SVC_OUTPUT_UpdateVoltageAndCurrentSense();
 
 
     /* USER CODE END WHILE */

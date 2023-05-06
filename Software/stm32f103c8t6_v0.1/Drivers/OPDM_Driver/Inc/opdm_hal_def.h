@@ -63,6 +63,22 @@
 #define MUX_INPUTS_A0_GPIO_Port GPIOB
 
 
+#define ENABLE 1
+#define DISABLE 0
+
+#define TRUE 1
+#define FALSE 0
+
+typedef enum{
+	DIGITAL_ACTIVE_H = 0,
+	DIGITAL_ACTIVE_L,
+	LINEAR_ANALOG,
+	CALIBRATED_ANALOG,
+	ROTARY_SWITCH,
+	NUM_OF_INPUT_TYPES
+}OPDM_INPUT_TYPE;
+
+
 typedef struct
 {
 	GPIO_TypeDef *port;

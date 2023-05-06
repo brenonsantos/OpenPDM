@@ -11,8 +11,6 @@
 
 #include "opdm_hal_def.h"
 
-
-
 //----------------- ENUMS -----------------
 
 typedef enum{
@@ -25,7 +23,7 @@ typedef enum{
 	LC2_OUTPUT,
 	LC3_OUTPUT,
 	NUM_OF_CURRENT_OUTPUTS
-}CURRENT_OUTPUT_TYPE;
+}PDMHAL_CurrentOutputType;
 
 
 typedef enum{
@@ -46,10 +44,8 @@ typedef enum{
 	NUM_OF_CANC_PINS
 }CANC_PINS_TYPE;
 
-void PDMHAL_SetCurrentOutput(CURRENT_OUTPUT_TYPE output);
-void PDMHAL_ResetCurrentOutput(CURRENT_OUTPUT_TYPE output);
-
-
+void PDMHAL_SetCurrentOutput(PDMHAL_CurrentOutputType output);
+void PDMHAL_ResetCurrentOutput(PDMHAL_CurrentOutputType output);
 
 /* OPDM_DRIVER_OPDM_HAL_IO_H_ */
 #endif 

@@ -7,7 +7,12 @@
 
 #include "opdm_cfg.h"
 
-// TODO: this is a temporary solution. Probably it shouldn't receive void, but the CAN messages and the inputs readings.
+/* TODO: this is a temporary solution. Probably it shouldn't receive void, but the CAN messages and the inputs readings.
+
+char OUTPUT_CONDITION(condition_t condition_function, can_msgs, inputs){
+    return condition_function(can_msgs, inputs);
+}
+*/
 
 char OUTPUT_CONDITION(condition_t condition_function){
     return condition_function();

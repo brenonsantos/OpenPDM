@@ -14,5 +14,8 @@
 #include "opdm_hal_adc.h"
 #include "opdm_hal_io.h"
 
+void PDMHAL_Init(void);
+
+uint32_t moving_average(uint32_t *data, uint32_t new_sample, VOLTAGE_WINDOW_SIZE);
 
 #endif /* OPDM_DRIVER_INC_OPDM_HAL_H_ */

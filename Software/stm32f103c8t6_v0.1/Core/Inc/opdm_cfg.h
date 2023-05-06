@@ -8,7 +8,7 @@
 #ifndef __OPDM_CFG_H_
 #define __OPDM_CFG_H_
 
-#include "c_types.h"
+#include "opdm_hal_def.h"
 
 //----------------- OUTPUT CONFIGURATION -----------------
 

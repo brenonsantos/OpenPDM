@@ -9,10 +9,10 @@
 #define INC_PDM_SVC_CURRENTOUTPUTS_H_
 
 //#include "opdm_hal.h"
-#include "opdm_hal_io.h"
+#include "opdm_hal.h"
 #include "opdm_cfg.h"
 
-
+#define SAMPLE_COUNT_OUTPUT 3
 
 typedef struct{
 	char output_label[MAX_IO_LABEL_SIZE];
@@ -47,6 +47,7 @@ typedef struct{
 
 extern OPDM_CURRENT_OUTPUT_SETUP_STRUCT CURRENT_OUTPUT_SETUP[NUM_OF_CURRENT_OUTPUTS];
 extern OPDM_CURRENT_OUTPUT_CONTROL_STRUCT CURRENT_OUTPUT_CONTROL[NUM_OF_CURRENT_OUTPUTS];
-void SVC_OutputInit();
+void SVC_OutputInit(void);
+void SVC_OUTPUT_UpdateVoltageAndCurrentSense(void);
 
 #endif /* INC_PDM_SVC_CURRENTOUTPUTS_H_ */
