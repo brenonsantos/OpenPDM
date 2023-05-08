@@ -33,6 +33,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "opdm_hal.h"
 #include "pdm_svc.h"
+#include "pdm_rte.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

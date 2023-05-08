@@ -11,6 +11,7 @@
 
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_def.h"
+#include "pdm_def.h"
 
 // ----------------- GPIO Defines -----------------
 // These are the GPIO ports and pins that are used by the OPDM driver.
@@ -62,12 +63,6 @@
 #define MUX_INPUTS_A0_Pin GPIO_PIN_7
 #define MUX_INPUTS_A0_GPIO_Port GPIOB
 
-
-#define ENABLE 1
-#define DISABLE 0
-
-#define TRUE 1
-#define FALSE 0
 
 typedef enum{
 	DIGITAL_ACTIVE_H = 0,

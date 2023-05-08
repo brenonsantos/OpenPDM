@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include <stdio.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -98,9 +98,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 //  PDMHAL_ADC_Init();
   PDMHAL_Init();
+  RTE_Init();
 //  PDMHAL_ADC_StartInputADC();
-  SVC_AD_Inputs_Init();
-  SVC_OutputInit();
+//  SVC_AD_Inputs_Init();
+//  SVC_OutputInit();
 
 
   /* USER CODE END 2 */
@@ -111,8 +112,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  SVC_AD_UpdateADInputs();
-	  SVC_OUTPUT_UpdateVoltageAndCurrentSense();
+	RTE_PollInputs();
+	RTE_PollOutputs();
+	uint32_t tick_teste = HAL_GetTick();
+	for(int i = 0; i < 8; i++){
+		RTE_UpdateFaultState(i);
+	}
 
 
     /* USER CODE END WHILE */

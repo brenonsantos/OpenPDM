@@ -15,26 +15,25 @@ void adc_error_handler();
 ADC_HandleTypeDef adinput_adc_handler; 	// adc1
 ADC_HandleTypeDef cvsense_adc_handler; 	// adc2
 
-
-PDM_HAL_PortPinTypedef CV_SENSE_MUX_ADDR[NUM_OF_CURRENT_VOLTAGE_SENSE_MULTIPLEXER] = {
+static const PDM_HAL_PortPinTypedef CV_SENSE_MUX_ADDR[NUM_OF_CURRENT_VOLTAGE_SENSE_MULTIPLEXER] = {
     {MUX_CUR_SENSE_A0_GPIO_Port, MUX_CUR_SENSE_A0_Pin},
     {MUX_CUR_SENSE_A1_GPIO_Port, MUX_CUR_SENSE_A1_Pin},
     {MUX_CUR_SENSE_A2_GPIO_Port, MUX_CUR_SENSE_A2_Pin},
     {MUX_CUR_SENSE_A3_GPIO_Port, MUX_CUR_SENSE_A3_Pin},
 };
 
-PDM_HAL_PortPinTypedef INPUT_SENSE_MUX_ADDR[NUM_OF_INPUT_MULTIPLEXER] = {
+static const PDM_HAL_PortPinTypedef INPUT_SENSE_MUX_ADDR[NUM_OF_INPUT_MULTIPLEXER] = {
 	{MUX_INPUTS_A0_GPIO_Port, MUX_INPUTS_A0_Pin},
 	{MUX_INPUTS_A1_GPIO_Port, MUX_INPUTS_A1_Pin},
 	{MUX_INPUTS_A2_GPIO_Port, MUX_INPUTS_A2_Pin},
 };
 
-PDMHAL_VoltageSenseType VOLTAGE_SENSE_MUX_MAP[NUM_OF_OUTPUTS] = {
+static const PDMHAL_VoltageSenseMapType VOLTAGE_SENSE_MUX_MAP[NUM_OF_OUTPUTS] = {
 		VOLTAGE_SENSE_HC0, VOLTAGE_SENSE_HC1, VOLTAGE_SENSE_HC2, VOLTAGE_SENSE_HC3,
 		VOLTAGE_SENSE_LC0, VOLTAGE_SENSE_LC1, VOLTAGE_SENSE_LC2, VOLTAGE_SENSE_LC3
 };
 
-PDMHAL_CurrentSenseType CURRENT_SENSE_MUX_MAP[NUM_OF_OUTPUTS] = {
+static const PDMHAL_CurrentSenseMapType CURRENT_SENSE_MUX_MAP[NUM_OF_OUTPUTS] = {
 		CURRENT_SENSE_HC0, CURRENT_SENSE_HC1, CURRENT_SENSE_HC2, CURRENT_SENSE_HC3,
 		CURRENT_SENSE_LC0, CURRENT_SENSE_LC1, CURRENT_SENSE_LC2, CURRENT_SENSE_LC3
 };
@@ -49,7 +48,7 @@ void PDMHAL_ADC_Init(void){
 	HAL_ADCEx_Calibration_Start(&cvsense_adc_handler);
 }
 
-void set_ad_input_multiplexer(PDMHAL_AnalogInputType input){
+void set_ad_input_multiplexer(AnalogDigitalInputType input){
 	GPIO_PinState pinState[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
 
 	HAL_GPIO_WritePin(INPUT_SENSE_MUX_ADDR[INPUT_MUX_A2].port, INPUT_SENSE_MUX_ADDR[INPUT_MUX_A2].pin, pinState[(input & 0x04) >> 2]);
@@ -57,7 +56,7 @@ void set_ad_input_multiplexer(PDMHAL_AnalogInputType input){
 	HAL_GPIO_WritePin(INPUT_SENSE_MUX_ADDR[INPUT_MUX_A0].port, INPUT_SENSE_MUX_ADDR[INPUT_MUX_A0].pin, pinState[(input & 0x01)]);
 }
 
-void set_current_sense_multiplexer(PDMHAL_OutputType output){
+void set_current_sense_multiplexer(CurrentOutputsTypedef output){
 	const GPIO_PinState pinState[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
 
 	HAL_GPIO_WritePin(CV_SENSE_MUX_ADDR[CV_SENSE_MUX_A3].port, CV_SENSE_MUX_ADDR[CV_SENSE_MUX_A3].pin, GPIO_PIN_RESET);
@@ -69,7 +68,7 @@ void set_current_sense_multiplexer(PDMHAL_OutputType output){
 	HAL_GPIO_WritePin(CV_SENSE_MUX_ADDR[CV_SENSE_MUX_A0].port, CV_SENSE_MUX_ADDR[CV_SENSE_MUX_A0].pin, pinState[(output & 0x01)]);
 }
 
-void set_voltage_sense_multiplexer(PDMHAL_OutputType output){
+void set_voltage_sense_multiplexer(CurrentOutputsTypedef output){
 	GPIO_PinState pinState[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
 
   HAL_GPIO_WritePin(CV_SENSE_MUX_ADDR[CV_SENSE_MUX_A3].port, CV_SENSE_MUX_ADDR[CV_SENSE_MUX_A3].pin, GPIO_PIN_SET);
@@ -186,19 +185,19 @@ uint32_t PDMHAL_ADC_ReadOutputCurrent(void){
   return HAL_ADC_GetValue(&cvsense_adc_handler);
 }
 
-void PDMHAL_ADC_StartNewVoltageReading(PDMHAL_VoltageSenseType new_sense){
+void PDMHAL_ADC_StartNewVoltageReading(PDMHAL_VoltageSenseMapType new_sense){
   HAL_ADC_Stop(&cvsense_adc_handler);
   set_voltage_sense_multiplexer(new_sense);
   HAL_ADC_Start(&cvsense_adc_handler);
 }
 
-void PDMHAL_ADC_StartNewCurrentReading(PDMHAL_CurrentSenseType new_sense){
+void PDMHAL_ADC_StartNewCurrentReading(PDMHAL_CurrentSenseMapType new_sense){
   HAL_ADC_Stop(&cvsense_adc_handler);
   set_current_sense_multiplexer(new_sense);
   HAL_ADC_Start(&cvsense_adc_handler);
 }
 
-void PDMHAL_ADC_StartNewInputReading(PDMHAL_AnalogInputType new_input){
+void PDMHAL_ADC_StartNewInputReading(AnalogDigitalInputType new_input){
 	HAL_ADC_Stop(&adinput_adc_handler);
 	set_ad_input_multiplexer(new_input);
 	HAL_ADC_Start(&adinput_adc_handler);

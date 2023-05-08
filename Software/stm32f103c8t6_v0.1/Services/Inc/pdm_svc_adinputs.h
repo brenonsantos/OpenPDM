@@ -8,21 +8,13 @@
 #ifndef __SVC_ADINPUTS_H_
 #define __SVC_ADINPUTS_H_
 
-//#include "opdm_hal.h"
 #include "opdm_hal.h"
-#include "opdm_cfg.h"
+//#include "opdm_cfg.h"
 
-typedef struct{
-	PDMHAL_AnalogInputType position;
-	char label[MAX_IO_LABEL_SIZE];
-	uint8_t enable;
-	uint32_t value;
-	OPDM_INPUT_TYPE input_type;
-}OPDM_INPUT_STRUCT; // talvez tenha que usar union
 
-extern OPDM_INPUT_STRUCT AD_INPUTS[NUM_OF_AD_INPUTS];
-void SVC_AD_Inputs_Init(void);
-void SVC_AD_UpdateADInputs(void);
+PDMHAL_AdcStatusType SVC_GetConversionStatusInput(void);
+uint32_t SVC_ReadInput(AnalogDigitalInputType reading_index);
+
 //typedef struct{
 //
 //}InputType_LinearAnalog;

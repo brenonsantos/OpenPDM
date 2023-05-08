@@ -33,18 +33,6 @@ typedef enum{
 	NUM_OF_CURRENT_VOLTAGE_SENSE_MULTIPLEXER
 }PDMHAL_CVMuxOutputType;
 
-typedef enum{
-	ANALOG_DIGITAL_INPUT_0 = 0,
-	ANALOG_DIGITAL_INPUT_1,
-	ANALOG_DIGITAL_INPUT_2,
-	ANALOG_DIGITAL_INPUT_3,
-	ANALOG_DIGITAL_INPUT_4,
-	ANALOG_DIGITAL_INPUT_5,
-	ANALOG_DIGITAL_INPUT_6,
-	ANALOG_DIGITAL_INPUT_7,
-	NUM_OF_AD_INPUTS
-}PDMHAL_AnalogInputType;
-
 
 /* The order of the CurrentSenseType and VoltageSenseType are defined by the order
  * of activation on the multiplexer IC
@@ -59,7 +47,7 @@ typedef enum{
 	CURRENT_SENSE_LC2,
 	CURRENT_SENSE_LC3,
 	NUM_OF_CURRENT_SENSES
-}PDMHAL_CurrentSenseType;
+}PDMHAL_CurrentSenseMapType;
 
 typedef enum{
 	VOLTAGE_SENSE_LC0 = 0,
@@ -71,19 +59,7 @@ typedef enum{
 	VOLTAGE_SENSE_HC2,
 	VOLTAGE_SENSE_HC3,
 	NUM_OF_VOLTAGE_SENSES
-}PDMHAL_VoltageSenseType;
-
-typedef enum{
-	OUTPUT_HC0 = 0,
-	OUTPUT_HC1,
-	OUTPUT_HC2,
-	OUTPUT_HC3,
-	OUTPUT_LC0,
-	OUTPUT_LC1,
-	OUTPUT_LC2,
-	OUTPUT_LC3,
-	NUM_OF_OUTPUTS
-}PDMHAL_OutputType;
+}PDMHAL_VoltageSenseMapType;
 
 typedef enum{
 	VOLTAGE_WINDOW_SIZE = 10,
@@ -101,9 +77,9 @@ uint32_t PDMHAL_ADC_ReadInput(void);
 uint32_t PDMHAL_ADC_ReadOutputVoltage(void);
 uint32_t PDMHAL_ADC_ReadOutputCurrent(void);
 
-void PDMHAL_ADC_StartNewInputReading(PDMHAL_AnalogInputType new_input);
-void PDMHAL_ADC_StartNewVoltageReading(PDMHAL_VoltageSenseType new_sense);
-void PDMHAL_ADC_StartNewCurrentReading(PDMHAL_CurrentSenseType new_sense);
+void PDMHAL_ADC_StartNewInputReading(AnalogDigitalInputType new_input);
+void PDMHAL_ADC_StartNewVoltageReading(PDMHAL_VoltageSenseMapType new_sense);
+void PDMHAL_ADC_StartNewCurrentReading(PDMHAL_CurrentSenseMapType new_sense);
 
 void PDMHAL_ADC_StartInputADC(void);
 void PDMHAL_ADC_ContinueReadingVoltage(void);

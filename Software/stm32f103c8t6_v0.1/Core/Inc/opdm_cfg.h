@@ -9,8 +9,12 @@
 #define __OPDM_CFG_H_
 
 #include "opdm_hal_def.h"
+#include "pdm_def.h"
 
 //----------------- OUTPUT CONFIGURATION -----------------
+#define ADCBYTES 4096 // 12 bits adc
+#define FLOAT_TO_UINT32_FOR_ADC_COMPARISON(dividend, divisor) \
+    ((uint32_t)(((dividend) / (divisor)) * ADCBYTES))
 
 // Global limits apply to all outputs. If a specific output has a greater limit than the global one, the global one will be used.
 #define HC_GLOBAL_MAX_CURRENT 20.0
@@ -21,130 +25,6 @@
 #define GLOBAL_TOTAL_CURRENT_LIMIT 50.0
 
 #define MAX_IO_LABEL_SIZE 4
-
-#define HC0_EN TRUE
-#define HC0_LABEL "HC0"
-#define HC0_RESET_ENABLE FALSE
-#define HC0_RESET_RETRY_COUNT 3
-#define HC0_RESET_RETRY_DELAY 2000
-#define HC0_CURRENT_SETPOINT 5.0
-#define HC0_INRUSH_TIME_LIMIT 1000
-#define HC0_MAX_VOLTAGE 15.5
-#define HC0_MIN_VOLTAGE 9.0
-#define HC0_MAX_CURRENT 10.0
-
-#define HC1_EN TRUE
-#define HC1_LABEL "HC1" 
-#define HC1_RESET_ENABLE FALSE
-#define HC1_RESET_RETRY_COUNT 3
-#define HC1_RESET_RETRY_DELAY 2000
-#define HC1_CURRENT_SETPOINT 5.0
-#define HC1_INRUSH_TIME_LIMIT 1000
-#define HC1_MAX_VOLTAGE 15.5
-#define HC1_MIN_VOLTAGE 9.0
-#define HC1_MAX_CURRENT 10.0
-
-#define HC2_EN TRUE
-#define HC2_LABEL "HC2"
-#define HC2_RESET_ENABLE FALSE
-#define HC2_RESET_RETRY_COUNT 3
-#define HC2_RESET_RETRY_DELAY 2000
-#define HC2_CURRENT_SETPOINT 5.0
-#define HC2_INRUSH_TIME_LIMIT 1000
-#define HC2_MAX_VOLTAGE 15.5
-#define HC2_MIN_VOLTAGE 9.0
-#define HC2_MAX_CURRENT 10.0
-
-#define HC3_EN TRUE
-#define HC3_LABEL "HC3"
-#define HC3_RESET_ENABLE FALSE
-#define HC3_RESET_RETRY_COUNT 3
-#define HC3_RESET_RETRY_DELAY 2000
-#define HC3_CURRENT_SETPOINT 5.0
-#define HC3_INRUSH_TIME_LIMIT 1000
-#define HC3_MAX_VOLTAGE 15.5
-#define HC3_MIN_VOLTAGE 9.0
-#define HC3_MAX_CURRENT 10.0
-
-#define LC0_EN TRUE
-#define LC0_LABEL "LC0"
-#define LC0_RESET_ENABLE FALSE
-#define LC0_RESET_RETRY_COUNT 3
-#define LC0_RESET_RETRY_DELAY 2000
-#define LC0_CURRENT_SETPOINT 5.0
-#define LC0_INRUSH_TIME_LIMIT 1000
-#define LC0_MAX_VOLTAGE 15.5
-#define LC0_MIN_VOLTAGE 9.0
-#define LC0_MAX_CURRENT 10.0
-
-#define LC1_EN TRUE
-#define LC1_LABEL "LC1"
-#define LC1_RESET_ENABLE FALSE
-#define LC1_RESET_RETRY_COUNT 3
-#define LC1_RESET_RETRY_DELAY 2000
-#define LC1_CURRENT_SETPOINT 5.0
-#define LC1_INRUSH_TIME_LIMIT 1000
-#define LC1_MAX_VOLTAGE 15.5
-#define LC1_MIN_VOLTAGE 9.0
-#define LC1_MAX_CURRENT 10.0
-
-#define LC2_EN TRUE
-#define LC2_LABEL "LC2"
-#define LC2_RESET_ENABLE FALSE
-#define LC2_RESET_RETRY_COUNT 3
-#define LC2_RESET_RETRY_DELAY 2000
-#define LC2_CURRENT_SETPOINT 5.0
-#define LC2_INRUSH_TIME_LIMIT 1000
-#define LC2_MAX_VOLTAGE 15.5
-#define LC2_MIN_VOLTAGE 9.0
-#define LC2_MAX_CURRENT 10.0
-
-#define LC3_EN TRUE
-#define LC3_LABEL "LC3"
-#define LC3_RESET_ENABLE FALSE
-#define LC3_RESET_RETRY_COUNT 3
-#define LC3_RESET_RETRY_DELAY 2000
-#define LC3_CURRENT_SETPOINT 5.0
-#define LC3_INRUSH_TIME_LIMIT 1000
-#define LC3_MAX_VOLTAGE 15.5
-#define LC3_MIN_VOLTAGE 9.0
-#define LC3_MAX_CURRENT 10.0
-
-
-
-//----------------- INPUT CONFIGURATION -----------------
-#define INPUT0_EN TRUE
-#define INPUT0_LABEL "IN0"
-#define INPUT0_TYPE LINEAR_ANALOG
-
-#define INPUT1_EN FALSE
-#define INPUT1_LABEL "IN1"
-#define INPUT1_TYPE DIGITAL_ACTIVE_H
-
-#define INPUT2_EN TRUE
-#define INPUT2_LABEL "IN2"
-#define INPUT2_TYPE DIGITAL_ACTIVE_H
-
-#define INPUT3_EN TRUE
-#define INPUT3_LABEL "IN3"
-#define INPUT3_TYPE DIGITAL_ACTIVE_H
-
-#define INPUT4_EN FALSE
-#define INPUT4_LABEL "IN4"
-#define INPUT4_TYPE DIGITAL_ACTIVE_H
-
-#define INPUT5_EN TRUE
-#define INPUT5_LABEL "IN5"
-#define INPUT5_TYPE DIGITAL_ACTIVE_H
-
-#define INPUT6_EN TRUE
-#define INPUT6_LABEL "IN6"
-#define INPUT6_TYPE DIGITAL_ACTIVE_H
-
-#define INPUT7_EN TRUE
-#define INPUT7_LABEL "IN7"
-#define INPUT7_TYPE DIGITAL_ACTIVE_H
-
 
 typedef char (*condition_t)(void);
 
@@ -157,6 +37,36 @@ char LC0_OUTPUT_CONDITION(void);
 char LC1_OUTPUT_CONDITION(void);
 char LC2_OUTPUT_CONDITION(void);
 char LC3_OUTPUT_CONDITION(void);
+
+typedef struct {
+    const uint8_t enable;
+    const char *label;
+    const uint8_t reset_enable;
+    const uint8_t reset_retry_count;
+    const uint8_t reset_retry_delay_seconds;
+    const uint32_t current_limit;
+    const uint32_t inrush_time_limit_miliseconds;
+    const float max_voltage;
+    const float min_voltage;
+    const float max_current;
+    condition_t condition_callback;
+}CurrentOutputConfigTypedef;
+
+typedef struct{
+	const char label[MAX_IO_LABEL_SIZE];
+	const uint8_t enable;
+    uint32_t value;
+	const OPDM_INPUT_TYPE input_type;
+}InputConfigTypedef; // talvez tenha que usar union
+
+extern InputConfigTypedef ANALOG_DIGITAL_INPUT[];
+extern const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[];
+
+//----------------- INPUT CONFIGURATION -----------------
+
+
+
+
 
 
 #endif /* __OPDM_OUTPUT_CFG_H_ */

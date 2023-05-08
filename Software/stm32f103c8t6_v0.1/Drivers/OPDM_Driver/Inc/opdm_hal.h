@@ -16,6 +16,6 @@
 
 void PDMHAL_Init(void);
 
-uint32_t moving_average(uint32_t *data, uint32_t new_sample, VOLTAGE_WINDOW_SIZE);
+uint32_t moving_average(uint32_t *data, uint32_t new_sample, MOVING_AVERAGE_WINDOW_SIZE window_size);
 
 #endif /* OPDM_DRIVER_INC_OPDM_HAL_H_ */

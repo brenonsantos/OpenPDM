@@ -8,7 +8,7 @@
 #include <pdm_svc.h>
 
 void SVC_Init(void){
-	SVC_AD_Inputs_Init();
-	SVC_OutputInit();
+//	SVC_AD_Inputs_Init();
+//	SVC_OutputInit();
 }
 
