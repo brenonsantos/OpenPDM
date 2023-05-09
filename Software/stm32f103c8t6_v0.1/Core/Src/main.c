@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <stdio.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -114,9 +113,9 @@ int main(void)
   {
 	RTE_PollInputs();
 	RTE_PollOutputs();
-	uint32_t tick_teste = HAL_GetTick();
 	for(int i = 0; i < 8; i++){
 		RTE_UpdateFaultState(i);
+		RTE_CalculateOutputState(i);
 	}
 
 

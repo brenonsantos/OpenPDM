@@ -25,10 +25,11 @@ void RTE_OutputsInit(){
        CURRENT_OUTPUT_CONTROL[i].fault = FALSE;
        CURRENT_OUTPUT_CONTROL[i].fault_buffer = FALSE;
        CURRENT_OUTPUT_CONTROL[i].current_reading = 0;
-       CURRENT_OUTPUT_CONTROL[i].voltage_reading = FLOAT_TO_UINT32_FOR_ADC_COMPARISON(12.0f, 14.4f); // 14.4 -> nominal batery voltage?
+       CURRENT_OUTPUT_CONTROL[i].voltage_reading = VOLTAGE_CONVERSION_TO_12BITS(12.0f); // init with the nominal battery voltage
        CURRENT_OUTPUT_CONTROL[i].current_limit = 0;
        CURRENT_OUTPUT_CONTROL[i].inrush_timer = 0;
        CURRENT_OUTPUT_CONTROL[i].retry_attempts = 0;
+	   CURRENT_OUTPUT_CONTROL[i].retry_timer = 0;
    }
 }
 
@@ -107,52 +108,51 @@ void RTE_PollOutputs(void){
 	}
 }
 
-void RTE_WriteOutputState(CurrentOutputsTypedef output, StateTypedef state){
-	if (CURRENT_OUTPUT_CONTROL[output].fault){
-		CURRENT_OUTPUT_CONTROL[output].output_state = FALSE;
-		return;
-	}
+
+// TODO: fix
+void RTE_WriteOutputState(CurrentOutputsTypedef output, OutputStateTypedef state){
+//	if (CURRENT_OUTPUT_CONTROL[output].fault){
+//		CURRENT_OUTPUT_CONTROL[output].output_state = FALSE;
+//		return;
+//	}
 	CURRENT_OUTPUT_CONTROL[output].output_state = state;
 }
 
 OutputFaultStateTypedef CheckFaultCondition(CurrentOutputsTypedef output){
 	RTE_OutputControlTypedef* output_control = &CURRENT_OUTPUT_CONTROL[output];
-	uint32_t tickstart = 0U;
-	tickstart = HAL_GetTick();
-//
+
+
 //	if (output_control->voltage_reading > CURRENT_OUTPUT_SETUP[output].max_voltage){
 //		return OVERVOLTAGE_STATE;
 //	}
 //	if (output_control->voltage_reading < CURRENT_OUTPUT_SETUP[output].min_voltage){
 //		return UNDERVOLTAGE_STATE;
 //	}
-//
-	// checks if there is overcurrent
+
+	/* The following code checks if the output current reading is above the current limit:
+	 *
+	 * If it is, it checks if the fault flag is active, meaning that the fault has already been detected, 
+	 * If it is not, it checks if the fault buffer flag is active, meaning that the inrush current is being detected
+	 * If it is, it checks if the inrush time limit has been reached, meaning that a fault has just happened
+	 * If it is not, it sets the inrush timer and returns the inrush state
+	 */ 
 	if (output_control->current_reading > CURRENT_OUTPUT_SETUP[output].current_limit){
 		if (output_control->fault){
 			return OVERCURRENT_STATE;
-		}
-		/* if there is overcurrent, checks if the fault flag is active, 
-		*  meaning an inrush current is being detected
-		*/ 
+		} 
 		if (output_control->fault_buffer){
-			uint32_t time_since_inrush_detection = tickstart - output_control->inrush_timer;
+			uint32_t time_since_inrush_detection = HAL_GetTick() - output_control->inrush_timer;
 
 			if (time_since_inrush_detection > CURRENT_OUTPUT_SETUP[output].inrush_time_limit_miliseconds){
 				return OVERCURRENT_STATE;
-			} // end of comparison between inrush detection and inrush time limit
+			}
+
 		return INRUSH_STATE;
-		}else{
-			output_control->inrush_timer = HAL_GetTick();
-			return INRUSH_STATE;
-		} // end of check if fault flag is active
+		}
+		output_control->inrush_timer = HAL_GetTick();
+		return INRUSH_STATE;	
+	}
 
-		// if the fault flag is not active, it means that the fault has just happened
-//		if (!output_control->fault_buffer){
-//
-//		}
-
-	} // end of check for overcurrent
 	output_control->inrush_timer = 0;
 	return NO_FAULT;
 }
@@ -176,9 +176,56 @@ void RTE_UpdateFaultState(CurrentOutputsTypedef output){
 			CURRENT_OUTPUT_CONTROL[output].fault = TRUE;
 			break;
 		case(NO_FAULT):
-			CURRENT_OUTPUT_CONTROL[output].fault = FALSE;
-			CURRENT_OUTPUT_CONTROL[output].fault = FALSE;
+//			CURRENT_OUTPUT_CONTROL[output].fault = FALSE; // There are conditions to reset a fault
+			CURRENT_OUTPUT_CONTROL[output].fault_buffer = FALSE;
 			break;
 	}
+ }
+
+void RTE_ResetFault(output){
+	CURRENT_OUTPUT_CONTROL[output].fault = FALSE;
 }
 
+OutputStateTypedef RTE_CalculateOutputState(CurrentOutputsTypedef output){
+	RTE_OutputControlTypedef* output_control = &CURRENT_OUTPUT_CONTROL[output];
+
+	if(!CURRENT_OUTPUT_SETUP[output].enable){
+		RTE_WriteOutputState(output, OUTPUT_DISABLED);
+		return OUTPUT_DISABLED;
+	}
+	
+	if (!CURRENT_OUTPUT_SETUP[output].reset_enable && output_control->fault){
+		RTE_WriteOutputState(output, OUTPUT_FAULT);
+		return OUTPUT_FAULT;
+	}
+
+	if (output_control->fault && CURRENT_OUTPUT_SETUP[output].reset_enable){
+
+		if (output_control->retry_attempts >= CURRENT_OUTPUT_SETUP[output].reset_retry_attempts){
+			RTE_WriteOutputState(output, OUTPUT_FAULT);
+			return OUTPUT_FAULT;
+		}
+
+		if (output_control->output_state != OUTPUT_WAITING_FOR_RESET){
+			output_control->retry_timer = HAL_GetTick();
+			RTE_WriteOutputState(output, OUTPUT_WAITING_FOR_RESET);
+			return OUTPUT_WAITING_FOR_RESET;
+		}
+
+
+		uint32_t time_since_reset_request = HAL_GetTick() - output_control->retry_timer;
+		if(time_since_reset_request < CURRENT_OUTPUT_SETUP[output].reset_retry_delay_seconds*1000){
+			RTE_WriteOutputState(output, OUTPUT_WAITING_FOR_RESET);
+			return OUTPUT_WAITING_FOR_RESET;
+		}
+
+		output_control->retry_attempts++;
+		output_control->retry_timer = 0;
+		RTE_WriteOutputState(output, OUTPUT_OK);
+		RTE_ResetFault(output);
+		return OUTPUT_OK;
+	}
+
+	RTE_WriteOutputState(output, OUTPUT_OK);
+	return OUTPUT_OK;
+}

@@ -15,10 +15,10 @@
 #define TRUE 1
 #define FALSE 0
 
-typedef enum{
-	ON = 1,
-	OFF = 1
-}StateTypedef;
+//typedef enum{
+//	ON = 1,
+//	OFF = 1
+//}StateTypedef;
 
 
 typedef enum{

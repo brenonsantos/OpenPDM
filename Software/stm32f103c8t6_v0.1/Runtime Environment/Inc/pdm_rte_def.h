@@ -21,7 +21,8 @@ typedef struct{
 	float voltage_reading;
 	float current_limit;
 	uint32_t inrush_timer;
-	int retry_attempts;
+	uint8_t retry_attempts;
+	uint32_t retry_timer;
 }RTE_OutputControlTypedef;
 
 // extern OPDM_CURRENT_OUTPUT_SETUP_STRUCT CURRENT_OUTPUT_SETUP[NUM_OF_CURRENT_OUTPUTS];
