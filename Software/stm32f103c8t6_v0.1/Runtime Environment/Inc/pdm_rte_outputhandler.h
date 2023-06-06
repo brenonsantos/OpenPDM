@@ -12,25 +12,15 @@
 
 
 
-typedef enum{
-	NO_FAULT = 0,
-	INRUSH_STATE,
-	OVERCURRENT_STATE,
-	OVERVOLTAGE_STATE,
-	UNDERVOLTAGE_STATE
-}OutputFaultStateTypedef;
+void RTE_PollOuputCurrentReading(void);
+void RTE_UpdateFaults(CurrentOutputsTypedef output);
 
-typedef enum{
-	OUTPUT_OFF = 0,
-	OUTPUT_OK,
-	OUTPUT_WAITING_FOR_RESET,
-	OUTPUT_FAULT,
-	OUTPUT_DISABLED,
-}OutputStateTypedef;
+CurrentOutputsTypedef RTE_getNextEnabledOutput(CurrentOutputsTypedef current_output);
+void RTE_ResetOutput(CurrentOutputsTypedef output);
+void RTE_UpdateFaults(CurrentOutputsTypedef output);
+void RTE_ResetFault(CurrentOutputsTypedef output);
+void RTE_ResetRetryAttempts(CurrentOutputsTypedef output);
 
-void RTE_OutputsInit(void);
-void RTE_PollOutputs(void);
-void RTE_UpdateFaultState(CurrentOutputsTypedef output);
-OutputStateTypedef RTE_CalculateOutputState(CurrentOutputsTypedef output);
+
 
 #endif /* INC_PDM_OUTPUTHANDLER_H_ */

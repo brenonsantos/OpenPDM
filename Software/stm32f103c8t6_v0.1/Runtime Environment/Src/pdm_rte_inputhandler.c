@@ -25,15 +25,14 @@ AnalogDigitalInputType getNextEnabledInput(AnalogDigitalInputType current_input)
 
 void RTE_PollInputs(void){
 	static AnalogDigitalInputType reading_index = 0;
-	static uint32_t reading = 0;
 	
     PDMHAL_AdcStatusType conversion_status = SVC_GetConversionStatusInput();
 	switch(conversion_status){
 		case(BUSY):
 			return;
 		case(CONVERSION_COMPLETE):
-            reading = SVC_ReadInput(reading_index);
-			ANALOG_DIGITAL_INPUT[reading_index].value = reading;
+
+			ANALOG_DIGITAL_INPUT[reading_index].value = SVC_ReadInput(reading_index);
 
 			reading_index = getNextEnabledInput(reading_index);
 			break;

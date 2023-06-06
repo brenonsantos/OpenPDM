@@ -5,15 +5,14 @@
  *      Author: breno
  */
 
-#ifndef INC_PDM_DEF_H_
-#define INC_PDM_DEF_H_
+#ifndef __PDM_DEF_H
+#define __PDM_DEF_H
 
 
-#define ENABLE 1
-#define DISABLE 0
 
 #define TRUE 1
 #define FALSE 0
+
 
 //typedef enum{
 //	ON = 1,
@@ -45,4 +44,4 @@ typedef enum{
 	NUM_OF_AD_INPUTS
 }AnalogDigitalInputType;
 
-#endif /* INC_PDM_DEF_H_ */
+#endif /* PDM_DEF*/

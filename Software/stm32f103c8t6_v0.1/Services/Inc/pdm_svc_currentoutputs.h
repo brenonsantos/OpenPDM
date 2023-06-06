@@ -8,7 +8,7 @@
 #ifndef INC_PDM_SVC_CURRENTOUTPUTS_H_
 #define INC_PDM_SVC_CURRENTOUTPUTS_H_
 
-#include "opdm_hal.h"
+#include <pdm_hal.h>
 //#include "opdm_cfg.h"
 
 PDMHAL_AdcStatusType SVC_GetConversionStatusVoltage(void);

@@ -8,7 +8,7 @@
 #ifndef __SVC_ADINPUTS_H_
 #define __SVC_ADINPUTS_H_
 
-#include "opdm_hal.h"
+#include <pdm_hal.h>
 //#include "opdm_cfg.h"
 
 

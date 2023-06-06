@@ -8,8 +8,9 @@
 #ifndef __OPDM_CFG_H_
 #define __OPDM_CFG_H_
 
-#include "opdm_hal_def.h"
+#include "pdm_hal_def.h"
 #include "pdm_def.h"
+#include "sw_components.h"
 
 
 /* The formula that correlates the current reading with the adc reading is:
@@ -90,6 +91,7 @@ typedef struct {
     condition_t condition_callback;
 }CurrentOutputConfigTypedef;
 
+
 typedef struct{
 	const char label[MAX_IO_LABEL_SIZE];
 	const uint8_t enable;
@@ -97,12 +99,11 @@ typedef struct{
 	const OPDM_INPUT_TYPE input_type;
 }InputConfigTypedef; // talvez tenha que usar union
 
+
 extern InputConfigTypedef ANALOG_DIGITAL_INPUT[];
 extern const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[];
 
 //----------------- INPUT CONFIGURATION -----------------
-
-
 
 
 

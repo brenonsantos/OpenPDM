@@ -1,0 +1,7 @@
+Changelog for PCB Version PCB_v0.1_revB:
+
+    Corrected the position of gate pins on the gate driver.
+
+Changes:
+
+	* Adjusted the gate pin positions on the gate driver to address an incorrect placement.
