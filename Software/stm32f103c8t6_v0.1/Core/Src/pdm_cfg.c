@@ -16,124 +16,110 @@ char OUTPUT_CONDITION(condition_t condition_function, can_msgs, inputs){
     return condition_function(can_msgs, inputs);
 }
 */
-char OUTPUT_CONDITION(condition_t condition_function){
+
+/**
+ ===============================================================================
+                      ##### OUTPUT Configuration #####
+ ===============================================================================
+
+	 Each output has a "condition" function that determines when and how to
+   turn it on or off.  Returning a FALSE statement will turn off the output,
+   while returning a TRUE statement will request the output to turn on. If
+   there are no faults detected in this output, it will remain turned on.
+
+	 You can use the following (every) global variables:
+	 - ANALOG_DIGITAL_INPUT[NUM_OF_INPUTS]
+	 - CURRENT_OUTPUT_SETUP[NUM_OF_OUTPUTS]
+	 - CURRENT_OUTPUT_CONTROL[NUM_OF_OUTPUTS]
+	 - CANBUS_RECEIVER_FRAMES[NUM_OF_CAN_RECEIVERS]
+	 - CANBUS_TRANSMITER_FRAMES[NUM_OF_CAN_TRANSMITERS]
+ * */
+
+uint8_t OUTPUT_CONDITION(condition_t condition_function){
     return condition_function();
 }
 
-char HC0_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t HC0_OUTPUT_CONDITION(void){
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 1000)
+		return TRUE;
+	return FALSE;
 }
 
-char HC1_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t HC1_OUTPUT_CONDITION(void){
+    return FALSE;
 }
 
-char HC2_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t HC2_OUTPUT_CONDITION(void){
+    return FALSE;
 }
 
-char HC3_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t HC3_OUTPUT_CONDITION(void){
+    return FALSE;
 }
 
-char LC0_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t LC0_OUTPUT_CONDITION(void){
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 500)
+		return TRUE;
+	return FALSE;
 }
 
-char LC1_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t LC1_OUTPUT_CONDITION(void){
+    return FALSE;
 }
 
-char LC2_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t LC2_OUTPUT_CONDITION(void){
+    return FALSE;
 }
 
-char LC3_OUTPUT_CONDITION(void){
-    return TRUE;
+uint8_t LC3_OUTPUT_CONDITION(void){
+    return FALSE;
 }
-
-
-/* The formula that correlates the current reading with the adc reading is:
- * adc_reading = (current * shunt_resistance * current_gain) * (adc_bytes/adc_voltage)
- * where:
- * - current is the current that is being read
- * - shunt_resistance is 3.3m ohms
- * - current_gain is the gain of the current amplifier, that is 100 for LC and 50 for HC
- * - adc_bits is the number of bits that the adc can read, that is 4096
- * - adc_voltage is the max voltage that the adc can read, that is 3.3
- * 
- * as shunt_resistance, current_gain, adc_bytes and adc_voltage are constants, we can simplify the formula to:
- * adc_reading_lc = current*372.36
- * adc_reading_hc = current*186.18
-*/ 
-
-#define HC_CURRENT_CONVERSION_TO_12BITS(current) \
-    ((uint32_t)(current*186.18))
-
-#define LC_CURRENT_CONVERSION_TO_12BITS(current) \
-    ((uint32_t)(current*372.36))
-
-
-
-/* The formula that correlates the output voltage reading with the adc reading is:
-    * adc_reading = (voltage * voltage_divider_ratio) * adc_bits / adc_voltage
-    * where:
-    * - voltage is the voltage that is being read
-    * - voltage_divider_ratio is R1/(R1+R2), that is 36k/(36k+10k)
-    * - adc_bits is the number of bits of the adc, that is 4096
-    * - adc_voltage is the max voltage that the adc can read, that is 3.3
-    * 
-    * as voltage_divider_ratio, adc_bytes, adc_voltage are constants, we can simplify the formula to:
-    * adc_reading = voltage * 269.83
-*/
-#define VOLTAGE_CONVERSION_TO_12BITS(voltage) \
-	((uint32_t)(voltage*269.83))
 
 
 InputConfigTypedef ANALOG_DIGITAL_INPUT[] ={
-		[ANALOG_DIGITAL_INPUT_0] = {
+		[INPUT_00] = {
 				.enable = TRUE,
 				.label = "IN0",
 				.input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
 		},
-        [ANALOG_DIGITAL_INPUT_1] = {
+        [INPUT_01] = {
                 .enable = FALSE,
                 .label = "IN1",
 				.input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
 		},
-        [ANALOG_DIGITAL_INPUT_2] = {
+        [INPUT_02] = {
                 .enable = TRUE,
                 .label = "IN2",
                 .input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
         },
-        [ANALOG_DIGITAL_INPUT_3] = {
+        [INPUT_03] = {
                 .enable = TRUE,
                 .label = "IN3",
                 .input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
         },
-        [ANALOG_DIGITAL_INPUT_4] = {
+        [INPUT_04] = {
                 .enable = FALSE,
                 .label = "IN4",
                 .input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
         },
-        [ANALOG_DIGITAL_INPUT_5] = {
+        [INPUT_05] = {
                 .enable = TRUE,
                 .label = "IN5",
                 .input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
         },
-        [ANALOG_DIGITAL_INPUT_6] = {
+        [INPUT_06] = {
                 .enable = TRUE,
                 .label = "IN6",
                 .input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
         },
-        [ANALOG_DIGITAL_INPUT_7] = {
+        [INPUT_07] = {
                 .enable = TRUE,
                 .label = "IN7",
                 .input_type = DIGITAL_ACTIVE_H,
@@ -247,5 +233,6 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
         .condition_callback = LC3_OUTPUT_CONDITION
     }
 };
+
 
 

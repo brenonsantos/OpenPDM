@@ -6,26 +6,18 @@
  */
 
 
-#include <pdm_hal.h>
+#include "pdm_hal.h"
 
+HAL_StatusTypeDef HAL_InitError, CANC_InitError, CANB_InitError, SPI_InitError,
+	ADC_InitError;
 
-void PDMHAL_Init(void){
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+void PDMHAL_Init (void) {
+  HAL_InitError = HAL_Init ();
 
+  SPI_InitError = PDMHAL_SPI_Init ();
+  ADC_InitError = PDMHAL_ADC_Init ();
+  CANC_InitError = PDMHAL_CANC_Init (CANC_500KBPS);
+  CANB_InitError = PDMHAL_CANB_Init ();
 
-	PDMHAL_ADC_Init();
-	/* Initi  */
-}
-
-// moving average filter for adc readings
-uint32_t moving_average(uint32_t *data, uint32_t new_sample, MOVING_AVERAGE_WINDOW_SIZE window_size){
-	uint32_t sum = 0;
-	for(int i = 0; i < window_size-1; i++){
-		data[i] = data[i+1];
-		sum += data[i];
-	}
-	data[window_size-1] = new_sample;
-	sum += new_sample;
-	return (sum / window_size);
+  /* Initi  */
 }

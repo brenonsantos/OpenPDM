@@ -11,11 +11,14 @@
 
 //#include "opdm_hal_io_cfg.h"
 
-#include <pdm_hal_adc.h>
-#include <pdm_hal_io.h>
+#include "pdm_hal_canb.h"
+#include "pdm_hal_canc.h"
+#include "pdm_hal_adc.h"
+#include "pdm_hal_io.h"
+#include "pdm_hal_spi.h"
+
 
 void PDMHAL_Init(void);
 
-uint32_t moving_average(uint32_t *data, uint32_t new_sample, MOVING_AVERAGE_WINDOW_SIZE window_size);
 
 #endif /* OPDM_DRIVER_INC_OPDM_HAL_H_ */

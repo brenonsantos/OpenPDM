@@ -22,5 +22,8 @@ void RTE_ResetFault(CurrentOutputsTypedef output);
 void RTE_ResetRetryAttempts(CurrentOutputsTypedef output);
 
 
+uint8_t RTE_OUTPUT_UpdateSense(void);
+void RTE_OUTPUT_UpdateFault(void);
+void RTE_OUTPUT_WriteOutputs(void);
 
 #endif /* INC_PDM_OUTPUTHANDLER_H_ */

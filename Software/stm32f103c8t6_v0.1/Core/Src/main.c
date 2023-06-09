@@ -40,14 +40,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc1;
-ADC_HandleTypeDef hadc2;
-
-CAN_HandleTypeDef hcan;
 
 RTC_HandleTypeDef hrtc;
-
-SPI_HandleTypeDef hspi2;
 
 /* USER CODE BEGIN PV */
 
@@ -56,10 +50,6 @@ SPI_HandleTypeDef hspi2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_ADC1_Init(void);
-static void MX_CAN_Init(void);
-static void MX_SPI2_Init(void);
-static void MX_ADC2_Init(void);
 static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
 void PollReadings(void);
@@ -86,53 +76,50 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-//	PDMHAL_Init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC1_Init();
-  MX_CAN_Init();
-  MX_SPI2_Init();
-  MX_ADC2_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-//  PDMHAL_ADC_Init();
   PDMHAL_Init();
   RTE_Init();
-//  PDMHAL_ADC_StartInputADC();
-//  SVC_AD_Inputs_Init();
-//  SVC_OutputInit();
-
-  uint8_t cur_output = RTE_getNextEnabledOutput(NUM_OF_OUTPUTS);
+  uint8_t hasOutputBeenUpdated = FALSE;
   /* USER CODE END 2 */
-
-  /* Infinite loop */
+//  CANC_MSG txMessage;
+//  CANC_MSG rxMessage;
+//  /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t counter = 0;
+
   while (1)
   {
-	  RTE_PollInputs();
+	  /* Update all measurements */
+	  hasOutputBeenUpdated = RTE_OUTPUT_UpdateSense();
 
-	  if (CurrentSenseReady(cur_output) = TRUE){
+//	  if (RTE_PDM_UpdateSystemIntegrity() == FAULT){
+//		  RTE_PDM_HandleSystemFault();
+////		  RTE_OUTPUT_PowerOffAllOutputs();
+////		  RTE_COMM_SendSystemIntegrityFault();
+//		  HAL_Delay(100);
+//		  continue;
+//	  }
+//	  RTE_INPUT_PollInputs();
+//	  RTE_COMM_ReceiveCommunucationData();
 
+	  /* Update all status */
+	  if (hasOutputBeenUpdated){
+		  RTE_OUTPUT_UpdateFault();
 	  }
-	  PollCurrentReading(cur_output);
-	  PollReadings();
 
-
-//	RTE_UpdateFaults(cur_output);
-//	RTE_CalculateOutputState(cur_output);
-
-
-
+	  /* Write all outputs */
+	  RTE_OUTPUT_WriteOutputs();
+//	  RTE_COMM_SendCommunicationData();
 
     /* USER CODE END WHILE */
 
@@ -189,138 +176,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
-
-/**
-  * @brief ADC1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ADC1_Init(void)
-{
-
-  /* USER CODE BEGIN ADC1_Init 0 */
-
-  /* USER CODE END ADC1_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC1_Init 1 */
-
-  /* USER CODE END ADC1_Init 1 */
-
-  /** Common config
-  */
-  hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
-  if (HAL_ADC_Init(&hadc1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_0;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC1_Init 2 */
-
-  /* USER CODE END ADC1_Init 2 */
-
-}
-
-/**
-  * @brief ADC2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ADC2_Init(void)
-{
-
-  /* USER CODE BEGIN ADC2_Init 0 */
-
-  /* USER CODE END ADC2_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC2_Init 1 */
-
-  /* USER CODE END ADC2_Init 1 */
-
-  /** Common config
-  */
-  hadc2.Instance = ADC2;
-  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc2.Init.ContinuousConvMode = DISABLE;
-  hadc2.Init.DiscontinuousConvMode = DISABLE;
-  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = 1;
-  if (HAL_ADC_Init(&hadc2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC2_Init 2 */
-
-  /* USER CODE END ADC2_Init 2 */
-
-}
-
-/**
-  * @brief CAN Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CAN_Init(void)
-{
-
-  /* USER CODE BEGIN CAN_Init 0 */
-//
-  /* USER CODE END CAN_Init 0 */
-
-  /* USER CODE BEGIN CAN_Init 1 */
-//
-  /* USER CODE END CAN_Init 1 */
-  hcan.Instance = CAN1;
-  hcan.Init.Prescaler = 16;
-  hcan.Init.Mode = CAN_MODE_NORMAL;
-  hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan.Init.TimeSeg2 = CAN_BS2_1TQ;
-  hcan.Init.TimeTriggeredMode = DISABLE;
-  hcan.Init.AutoBusOff = DISABLE;
-  hcan.Init.AutoWakeUp = DISABLE;
-  hcan.Init.AutoRetransmission = DISABLE;
-  hcan.Init.ReceiveFifoLocked = DISABLE;
-  hcan.Init.TransmitFifoPriority = DISABLE;
-  if (HAL_CAN_Init(&hcan) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN CAN_Init 2 */
-//
-  /* USER CODE END CAN_Init 2 */
-
-}
-
 /**
   * @brief RTC Initialization Function
   * @param None
@@ -379,43 +234,6 @@ static void MX_RTC_Init(void)
 
 }
 
-/**
-  * @brief SPI2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI2_Init(void)
-{
-
-  /* USER CODE BEGIN SPI2_Init 0 */
-
-  /* USER CODE END SPI2_Init 0 */
-
-  /* USER CODE BEGIN SPI2_Init 1 */
-
-  /* USER CODE END SPI2_Init 1 */
-  /* SPI2 parameter configuration*/
-  hspi2.Instance = SPI2;
-  hspi2.Init.Mode = SPI_MODE_MASTER;
-  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi2.Init.NSS = SPI_NSS_HARD_OUTPUT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi2.Init.CRCPolynomial = 10;
-  if (HAL_SPI_Init(&hspi2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SPI2_Init 2 */
-
-  /* USER CODE END SPI2_Init 2 */
-
-}
 
 /**
   * @brief GPIO Initialization Function
@@ -446,13 +264,13 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GATE_HC0_SIG_Pin|GATE_HC1_SIG_Pin|GATE_HC2_SIG_Pin|GATE_HC3_SIG_Pin
-                          |MUX_CUR_SENSE_A2_Pin|MUX_CUR_SENSE_A1_Pin|MUX_CUR_SENSE_A0_Pin|CANB_EN_Pin
-                          |MUX_INPUTS_A0_Pin, GPIO_PIN_RESET);
+                          |CAN_CS_Pin|MUX_CUR_SENSE_A2_Pin|MUX_CUR_SENSE_A1_Pin|MUX_CUR_SENSE_A0_Pin
+                          |CANB_EN_Pin|MUX_INPUTS_A0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : INTERNAL_LED_Pin */
   GPIO_InitStruct.Pin = INTERNAL_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(INTERNAL_LED_GPIO_Port, &GPIO_InitStruct);
 
@@ -482,6 +300,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CAN_CS_Pin */
+  GPIO_InitStruct.Pin = CAN_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(CAN_CS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : CANB_ERR_Pin */
   GPIO_InitStruct.Pin = CANB_ERR_Pin;
@@ -524,6 +349,36 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
+
+//	if(CANC_Receive(&rxMessage)){
+//	  txMessage.frame.idType = rxMessage.frame.idType;
+//	  txMessage.frame.id = rxMessage.frame.id;
+//	  txMessage.frame.dlc = rxMessage.frame.dlc;
+//	  txMessage.frame.data0++;
+//	  txMessage.frame.data1 = rxMessage.frame.data1;
+//	  txMessage.frame.data2 = rxMessage.frame.data2;
+//	  txMessage.frame.data3 = rxMessage.frame.data3;
+//	  txMessage.frame.data4 = rxMessage.frame.data4;
+//	  txMessage.frame.data5 = rxMessage.frame.data5;
+//	  txMessage.frame.data6 = rxMessage.frame.data6;
+//	  txMessage.frame.data7 = rxMessage.frame.data7;
+//	  CANC_Transmit(&txMessage);
+//	}
+
+//	txMessage.frame.idType = dSTANDARD_CAN_MSG_ID_2_0B;
+//	txMessage.frame.id = 0x0A;
+//	txMessage.frame.dlc = 8;
+//	txMessage.frame.data0 = 0;
+//	txMessage.frame.data1 = 1;
+//	txMessage.frame.data2 = 2;
+//	txMessage.frame.data3 = 3;
+//	txMessage.frame.data4 = 4;
+//	txMessage.frame.data5 = 5;
+//	txMessage.frame.data6 = 6;
+//	txMessage.frame.data7 = 7;
+//	CANC_Transmit(&txMessage);
+//
+//	HAL_Delay(100);
 
 #ifdef  USE_FULL_ASSERT
 /**

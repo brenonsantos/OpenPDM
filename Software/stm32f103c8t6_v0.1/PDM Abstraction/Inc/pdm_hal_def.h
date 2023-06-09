@@ -12,6 +12,12 @@
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_def.h"
 #include "pdm_def.h"
+#include <stddef.h>
+
+/* CAN payload length and DLC definitions according to ISO 11898-1 */
+#define CAN_MAX_DLC 8
+#define CAN_MAX_DLEN 8
+#define CAN_MAX_MSG_LENGTH 14 // idType 1byte + id 4 bytes + dlc 1 byte + data CAN_MAX_DLEN = 14 bytes
 
 // ----------------- GPIO Defines -----------------
 // These are the GPIO ports and pins that are used by the OPDM driver.
@@ -44,6 +50,8 @@
 #define GATE_HC3_SIG_GPIO_Port GPIOB
 #define GATE_HC2_SIG_Pin GPIO_PIN_10
 #define GATE_HC2_SIG_GPIO_Port GPIOB
+#define CAN_CS_Pin GPIO_PIN_12
+#define CAN_CS_GPIO_Port GPIOB
 #define CANC_INTERRUPT_Pin GPIO_PIN_8
 #define CANC_INTERRUPT_GPIO_Port GPIOA
 #define CANB_ERR_Pin GPIO_PIN_9
@@ -74,10 +82,34 @@ typedef enum{
 }OPDM_INPUT_TYPE;
 
 
-typedef struct
-{
+typedef enum{
+  CAN_B = 0,
+  CAN_C,
+  NUM_OF_CAN_BUSES
+}PDMHAL_CAN_BusType;
+
+typedef enum{
+  CAN_Standard = 1,
+  CAN_Extended = 2,
+}PDMHAL_CAN_BusFrameFormat;
+
+typedef union {
+  struct {
+	PDMHAL_CAN_BusType CANBus;
+	PDMHAL_CAN_BusFrameFormat idType;
+    uint32_t id;
+    uint8_t dataLengthCode;
+    uint8_t data[CAN_MAX_DLEN];
+  } frame;
+  struct {
+	PDMHAL_CAN_BusType CANBus;
+	uint8_t array[CAN_MAX_MSG_LENGTH];
+  }alternate_frame;
+} PDMHAL_CAN_MessageFrame;
+
+typedef struct{
 	GPIO_TypeDef *port;
     uint16_t pin;
-}PDM_HAL_PortPinTypedef;
+}PDMHAL_PortPinTypedef;
 
 #endif /* OPDM_DRIVER_INC_OPDM_HAL_DEF_H_ */

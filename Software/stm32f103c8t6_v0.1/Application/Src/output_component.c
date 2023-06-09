@@ -9,7 +9,9 @@
 
 OutputControlTypedef CURRENT_OUTPUT_CONTROL[NUM_OF_OUTPUTS];
 
-void OUTPUT_initOutputs(){
+void OUTPUT_WriteOutputState(CurrentOutputsTypedef output, OutputStateTypedef state);
+
+void OUTPUT_initOutputs(void){
 	for(CurrentOutputsTypedef i = 0; i < NUM_OF_OUTPUTS; i++){
        CURRENT_OUTPUT_CONTROL[i].output_state = OUTPUT_OK;
        CURRENT_OUTPUT_CONTROL[i].fault = NO_FAULT;
@@ -33,16 +35,6 @@ void OUTPUT_Reset(CurrentOutputsTypedef output){
        	CURRENT_OUTPUT_CONTROL[output].inrush_timer = 0;
        	CURRENT_OUTPUT_CONTROL[output].retry_attempts = 0;
 	   	CURRENT_OUTPUT_CONTROL[output].retry_timer = 0;
-}
-
-CurrentOutputsTypedef OUTPUT_getNextEnabled(CurrentOutputsTypedef current_output){
-	for(CurrentOutputsTypedef i = current_output+1; i < NUM_OF_OUTPUTS; i++){
-		if(isOutputEnable(i)) return i;
-	}
-	for(CurrentOutputsTypedef i = 0; i <= current_output; i++){
-		if(isOutputEnable(i)) return i;
-	}
-	return 0;
 }
 
 OutputStateTypedef OUTPUT_CalculateState(CurrentOutputsTypedef output){
@@ -71,7 +63,6 @@ OutputStateTypedef OUTPUT_CalculateState(CurrentOutputsTypedef output){
 			return OUTPUT_WAITING_FOR_RESET;
 		}
 
-
 		uint32_t time_since_reset_request = HAL_GetTick() - output_control->retry_timer;
 		if(time_since_reset_request < CURRENT_OUTPUT_SETUP[output].reset_retry_delay_seconds*1000){
 			OUTPUT_WriteOutputState(output, OUTPUT_WAITING_FOR_RESET);
@@ -81,7 +72,7 @@ OutputStateTypedef OUTPUT_CalculateState(CurrentOutputsTypedef output){
 		output_control->retry_attempts++;
 		output_control->retry_timer = 0;
 		OUTPUT_WriteOutputState(output, OUTPUT_OK);
-		RTE_ResetFault(output);
+		OUTPUT_ResetFault(output);
 		return OUTPUT_OK;
 	}
 
@@ -89,13 +80,13 @@ OutputStateTypedef OUTPUT_CalculateState(CurrentOutputsTypedef output){
 	return OUTPUT_OK;
 }
 
-OutputFaultStateTypedef OUTPUT_CheckCurrentCondition(CurrentOutputsTypedef output){
+OutputFaultStateTypedef CheckCurrentCondition(CurrentOutputsTypedef output){
 	OutputControlTypedef* output_control = &CURRENT_OUTPUT_CONTROL[output];
 	/* The following code checks if the output current reading is above the current limit:
 	 *
 	 * If it is, it checks if the fault flag is active, meaning that the fault has already been detected,
 	 * If it is not, it checks if the fault buffer flag is active, meaning that the inrush current is being detected
-	 * If it is, it checks if the inrush time limit has been reached, meaning that a fault has just happened
+	 * If a inrush current is being detected, it checks if the inrush time limit has been reached, meaning that a fault has just happened
 	 * If it is not, it sets the inrush timer and returns the inrush state
 	 */
 	if (output_control->current_reading > CURRENT_OUTPUT_SETUP[output].current_limit){
@@ -118,23 +109,34 @@ OutputFaultStateTypedef OUTPUT_CheckCurrentCondition(CurrentOutputsTypedef outpu
 	return NO_FAULT;
 }
 
-void OUTPUT_UpdateFaults(CurrentOutputsTypedef output){
-	OutputFaultStateTypedef fault_status = CheckFaultCondition(output);
+OutputFaultStateTypedef CheckVoltageCondition(CurrentOutputsTypedef output){
+	OutputControlTypedef* output_control = &CURRENT_OUTPUT_CONTROL[output];
 
-	switch(fault_status){
+	if (output_control->voltage_reading > CURRENT_OUTPUT_SETUP[output].max_voltage){
+		return OVERVOLTAGE_STATE;
+	}
+	if (output_control->voltage_reading < CURRENT_OUTPUT_SETUP[output].min_voltage){
+		return UNDERVOLTAGE_STATE;
+	}
+	return NO_FAULT;
+}
+
+void OUTPUT_UpdateFaults(CurrentOutputsTypedef output){
+	CURRENT_OUTPUT_CONTROL[output].fault = CheckCurrentCondition(output);
+	if (CURRENT_OUTPUT_CONTROL[output].fault == NO_FAULT){
+		CURRENT_OUTPUT_CONTROL[output].fault = CheckVoltageCondition(output);
+	}
+
+	switch(CURRENT_OUTPUT_CONTROL[output].fault){
 		case(OVERCURRENT_STATE):
-			CURRENT_OUTPUT_CONTROL[output].fault = TRUE;
 			CURRENT_OUTPUT_CONTROL[output].fault_buffer = FALSE;
 			break;
 		case(INRUSH_STATE):
-			CURRENT_OUTPUT_CONTROL[output].fault = FALSE;
 			CURRENT_OUTPUT_CONTROL[output].fault_buffer = TRUE;
 			break;
 		case(OVERVOLTAGE_STATE):
-			CURRENT_OUTPUT_CONTROL[output].fault = TRUE;
 			break;
 		case(UNDERVOLTAGE_STATE):
-			CURRENT_OUTPUT_CONTROL[output].fault = TRUE;
 			break;
 		case(NO_FAULT):
 			CURRENT_OUTPUT_CONTROL[output].fault_buffer = FALSE;
@@ -143,24 +145,14 @@ void OUTPUT_UpdateFaults(CurrentOutputsTypedef output){
  }
 
 
-void OUTPUT_ResetFault(CurrentOutputsTypedef output){
-	CURRENT_OUTPUT_CONTROL[output].fault = FALSE;
-}
+uint8_t OUTPUT_PollVoltageSense(CurrentOutputsTypedef reading_index){
 
-void OUTPUT_ResetRetryAttempts(CurrentOutputsTypedef output){
-	CURRENT_OUTPUT_CONTROL[output].retry_attempts = 0;
-}
-
-uint8_t PollVoltageSense(CurrentOutputsTypedef reading_index){
-	static uint32_t reading = 0;
-
-	PDMHAL_AdcStatusType conversion_status = SVC_GetConversionStatusVoltage();
+	PDMHAL_AdcStatusType conversion_status = PDMHAL_ADC_CheckConversionStatusVoltage();
 	switch(conversion_status){
 		case(BUSY):
 			return FALSE;
 		case(CONVERSION_COMPLETE):
-			reading = SVC_ReadVoltage(reading_index);
-			CURRENT_OUTPUT_CONTROL[reading_index].voltage_reading = reading;
+			CURRENT_OUTPUT_CONTROL[reading_index].voltage_reading = PDMHAL_ADC_ReadOutputVoltage(reading_index);
 			return TRUE;
 		case(READY):
 			return FALSE;
@@ -168,15 +160,15 @@ uint8_t PollVoltageSense(CurrentOutputsTypedef reading_index){
 	return FALSE;
 }
 
-uint8_t PollCurrentSense(CurrentOutputsTypedef reading_index){
+uint8_t OUTPUT_PollCurrentSense(CurrentOutputsTypedef reading_index){
 	static uint32_t reading = 0;
 
-	PDMHAL_AdcStatusType conversion_status = SVC_GetConversionStatusCurrent();
+	PDMHAL_AdcStatusType conversion_status = PDMHAL_ADC_CheckConversionStatusCurrent();
 	switch(conversion_status){
 		case(BUSY):
 			break;
 		case(CONVERSION_COMPLETE):
-			reading = SVC_ReadCurrent(reading_index);
+			reading = PDMHAL_ADC_ReadOutputCurrent(reading_index);
 			CURRENT_OUTPUT_CONTROL[reading_index].current_reading = reading;
 
 			if (reading > CURRENT_OUTPUT_CONTROL[reading_index].peak_current){
@@ -191,45 +183,30 @@ uint8_t PollCurrentSense(CurrentOutputsTypedef reading_index){
 }
 
 
-void RTE_PollOuputCurrentReading(void){
-	static CurrentOutputsTypedef reading_index = 0;
-	static uint8_t is_reading_voltage = FALSE, first_cycle_flag = TRUE;
-
-	if (first_cycle_flag){
-		first_cycle_flag = FALSE;
-		reading_index = RTE_getNextEnabledOutput(NUM_OF_OUTPUTS);
-		PDMHAL_ADC_StartNewCurrentReading(reading_index);
-		return;
-	}
-
-	if (is_reading_voltage){
-		if (PollVoltageSense(reading_index)){
-			is_reading_voltage = FALSE;
-			reading_index = RTE_getNextEnabledOutput(reading_index);
-			PDMHAL_ADC_StartNewCurrentReading(reading_index);
-		}
-	}
-	else{
-		if (PollCurrentSense(reading_index)){
-			is_reading_voltage = TRUE;
-			PDMHAL_ADC_StartNewVoltageReading(reading_index);
-		}
-	}
-}
-
-
 void OUTPUT_WriteOutputState(CurrentOutputsTypedef output, OutputStateTypedef state){
-	if (state == TRUE && CURRENT_OUTPUT_CONTROL[output].fault == TRUE){ // Just a redundant check
+	if (state == OUTPUT_OK && CURRENT_OUTPUT_CONTROL[output].fault != NO_FAULT){ // Just a redundant check
 		CURRENT_OUTPUT_CONTROL[output].output_state = OUTPUT_FAULT;
 	}
 	CURRENT_OUTPUT_CONTROL[output].output_state = state;
 }
 
+uint8_t OUTPUT_isOutputEnable(CurrentOutputsTypedef output_addr){
+	return CURRENT_OUTPUT_SETUP[output_addr].enable;
+}
 
-//	if (output_control->voltage_reading > CURRENT_OUTPUT_SETUP[output].max_voltage){
-//		return OVERVOLTAGE_STATE;
-//	}
-//	if (output_control->voltage_reading < CURRENT_OUTPUT_SETUP[output].min_voltage){
-//		return UNDERVOLTAGE_STATE;
-//	}
+OutputPowerStateTypedef OUTPUT_getPowerState(CurrentOutputsTypedef output){
+	return CURRENT_OUTPUT_CONTROL[output].power_state;
+}
+
+void OUTPUT_ResetFault(CurrentOutputsTypedef output){
+	CURRENT_OUTPUT_CONTROL[output].fault = NO_FAULT;
+}
+
+void OUTPUT_ResetRetryAttempts(CurrentOutputsTypedef output){
+	CURRENT_OUTPUT_CONTROL[output].retry_attempts = 0;
+}
+
+void OUTPUT_SetPowerState(CurrentOutputsTypedef outputIndex, OutputPowerStateTypedef powerState){
+	CURRENT_OUTPUT_CONTROL[outputIndex].power_state = powerState;
+}
 

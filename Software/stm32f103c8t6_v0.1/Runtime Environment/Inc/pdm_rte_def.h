@@ -9,6 +9,7 @@
 #define INC_PDM_RTE_DEF_H_
 
 #include "opdm_cfg.h"
+#include "pdm_hal.h"
 #include "pdm_svc.h"
 
 

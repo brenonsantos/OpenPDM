@@ -9,6 +9,7 @@
 #define __OPDM_CFG_H_
 
 #include "pdm_hal_def.h"
+#include "pdm_svc.h"
 #include "pdm_def.h"
 #include "sw_components.h"
 
@@ -62,46 +63,21 @@
 #define GLOBAL_INRUSH_TIME_LIMIT 2000
 #define GLOBAL_TOTAL_CURRENT_LIMIT 50.0f
 
-#define MAX_IO_LABEL_SIZE 4
+#define MAX_LABEL_SIZE 4
 
-typedef char (*condition_t)(void);
+uint8_t HC0_OUTPUT_CONDITION(void);
+uint8_t HC1_OUTPUT_CONDITION(void);
+uint8_t HC2_OUTPUT_CONDITION(void);
+uint8_t HC3_OUTPUT_CONDITION(void);
 
-char HC0_OUTPUT_CONDITION(void);
-char HC1_OUTPUT_CONDITION(void);
-char HC2_OUTPUT_CONDITION(void);
-char HC3_OUTPUT_CONDITION(void);
-
-char LC0_OUTPUT_CONDITION(void);
-char LC1_OUTPUT_CONDITION(void);
-char LC2_OUTPUT_CONDITION(void);
-char LC3_OUTPUT_CONDITION(void);
+uint8_t LC0_OUTPUT_CONDITION(void);
+uint8_t LC1_OUTPUT_CONDITION(void);
+uint8_t LC2_OUTPUT_CONDITION(void);
+uint8_t LC3_OUTPUT_CONDITION(void);
 
 
-typedef struct {
-    const uint8_t enable;
-    const char *label;
-    const uint8_t reset_enable;
-    const uint8_t reset_retry_attempts;
-    const uint8_t reset_retry_delay_seconds;
-    const uint32_t current_limit;
-    const uint32_t inrush_time_limit_miliseconds;
-    const uint32_t max_voltage;
-    const uint32_t min_voltage;
-    const uint32_t max_current;
-    condition_t condition_callback;
-}CurrentOutputConfigTypedef;
 
-
-typedef struct{
-	const char label[MAX_IO_LABEL_SIZE];
-	const uint8_t enable;
-    uint32_t value;
-	const OPDM_INPUT_TYPE input_type;
-}InputConfigTypedef; // talvez tenha que usar union
-
-
-extern InputConfigTypedef ANALOG_DIGITAL_INPUT[];
-extern const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[];
+//extern const
 
 //----------------- INPUT CONFIGURATION -----------------
 

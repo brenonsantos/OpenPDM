@@ -11,6 +11,8 @@
 
 #include "pdm_rte_inputhandler.h"
 #include "pdm_rte_outputhandler.h"
+//#include "pdm_hal.h"
+//#include "pdm_svc.h"
 
 
 void RTE_Init(void);

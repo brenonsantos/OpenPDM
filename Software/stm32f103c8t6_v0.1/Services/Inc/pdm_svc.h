@@ -8,11 +8,13 @@
 #ifndef __SVC_INIT_H_
 #define __SVC_INIT_H_
 
-#include "pdm_svc_adinputs.h"
-#include "pdm_svc_currentoutputs.h"
+//#include "pdm_hal.h"
+#include "pdm_svc_can.h"
 
 
 void SVC_Init(void);
+
+
 
 
 

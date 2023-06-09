@@ -6,3 +6,8 @@
  */
 
 
+#include "input_component.h"
+
+uint8_t INPUT_isInputEnable(AnalogDigitalInputType input){
+	return ANALOG_DIGITAL_INPUT[input].enable;
+}

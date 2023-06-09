@@ -5,11 +5,11 @@
  *      Author: breno
  */
 
-#ifndef PDM_ABSTRACTION_INC_OPDM_HAL_ADC_H_
-#define PDM_ABSTRACTION_INC_OPDM_HAL_ADC_H_
+#ifndef __PDM_HAL_ADC_H_
+#define __PDM_HAL_ADC_H_
 
 
-#include <pdm_hal_def.h>
+#include "pdm_hal_def.h"
 
 
 typedef enum{
@@ -67,25 +67,19 @@ typedef enum{
 	ADINPUT_WINDOW_SIZE = 10
 }MOVING_AVERAGE_WINDOW_SIZE;
 
-void PDMHAL_ADC_Init(void);
+HAL_StatusTypeDef PDMHAL_ADC_Init(void);
 
 PDMHAL_AdcStatusType PDMHAL_ADC_CheckConversionStatusInput(void);
 PDMHAL_AdcStatusType PDMHAL_ADC_CheckConversionStatusCurrent(void);
 PDMHAL_AdcStatusType PDMHAL_ADC_CheckConversionStatusVoltage(void);
 
-uint32_t PDMHAL_ADC_ReadInput(void);
-uint32_t PDMHAL_ADC_ReadOutputVoltage(void);
-uint32_t PDMHAL_ADC_ReadOutputCurrent(void);
+uint32_t PDMHAL_ADC_ReadInput(AnalogDigitalInputType reading_index);
+uint32_t PDMHAL_ADC_ReadOutputCurrent(CurrentOutputsTypedef reading_index);
+uint32_t PDMHAL_ADC_ReadOutputVoltage(CurrentOutputsTypedef reading_index);
 
 void PDMHAL_ADC_StartNewInputReading(AnalogDigitalInputType new_input);
 void PDMHAL_ADC_StartNewVoltageReading(PDMHAL_VoltageSenseMapType new_sense);
 void PDMHAL_ADC_StartNewCurrentReading(PDMHAL_CurrentSenseMapType new_sense);
 
-void PDMHAL_ADC_StartInputADC(void);
-void PDMHAL_ADC_ContinueReadingVoltage(void);
-void PDMHAL_ADC_ContinueReadingCurrent(void);
 
-
-void hal_adc_teste(void);
-
-#endif /* PDM_ABSTRACTION_INC_OPDM_HAL_ADC_H_ */
+#endif /* __PDM_HAL_ADC_H_ */
