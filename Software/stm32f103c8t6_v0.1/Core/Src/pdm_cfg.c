@@ -7,7 +7,9 @@
 
 #include "opdm_cfg.h"
 
-
+//extern CANBusReceiverTypedef CANBUS_RECEIVER_FRAMES[];
+extern CANBusReceiverTypedef CANBUS_RECEIVER_FRAMES[NUM_OF_CAN_RECEIVERS];
+extern CANBusTransmiterTypedef CANBUS_TRANSMITER_FRAMES[NUM_OF_CAN_TRANSMITERS];
 
 
 /* TODO: this is a temporary solution. Probably it shouldn't receive void, but the CAN messages and the inputs readings.
@@ -74,6 +76,21 @@ uint8_t LC2_OUTPUT_CONDITION(void){
 uint8_t LC3_OUTPUT_CONDITION(void){
     return FALSE;
 }
+
+uint8_t CAN0_OUTPUT_FRAME(void){
+  CAN_OUTPUT_Transmit_CurrentSense(LC0);
+  return TRUE;
+//  CAN_OUTPUT_Transmit_32to16bits();
+//  CAN_OUTPUT_Transmit_32to32bits();
+
+//  uint8_t dlc = 8;
+//  uint8_t data[dlc];
+//  uint32_t voltage = 2534;
+//  data[0] = voltage;
+//
+//  CANBUS_TRANSMITER_FRAMES[CAN_OUT_00].frame->data = {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
+}
+
 
 
 InputConfigTypedef ANALOG_DIGITAL_INPUT[] ={
@@ -234,5 +251,74 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
     }
 };
 
+
+
+void CONFIG_CAN_RECEIVERS(void){
+  CANBUS_RECEIVER_FRAMES[CAN_IN_00] = (CANBusReceiverTypedef){
+    .label = "iCAN0",
+    .status = CAN_MSG_NOT_RECEIVED,
+    .size = CAN_MSG_SIZE_1FRAME,
+    .timeout_ms = 1000,
+    .frame = {
+      .frame.CANBus = CAN_C,
+      .frame.idType = CAN_Standard,
+      .frame.id = 0x40,
+    }
+  };
+
+  CANBUS_RECEIVER_FRAMES[CAN_IN_01] = (CANBusReceiverTypedef){
+    .label = "iCAN1",
+    .status = CAN_MSG_NOT_RECEIVED,
+    .size = CAN_MSG_SIZE_1FRAME,
+    .timeout_ms = 1000,
+    .frame = {
+      .frame.CANBus = CAN_B,
+      .frame.idType = CAN_Standard,
+      .frame.id = 0x35,
+    }
+  };
+
+  CANBUS_RECEIVER_FRAMES[CAN_IN_02] = (CANBusReceiverTypedef){
+    .label = "iCAN2",
+    .status = CAN_MSG_NOT_RECEIVED,
+    .size = CAN_MSG_SIZE_1FRAME,
+    .timeout_ms = 1000,
+    .frame = {
+      .frame.CANBus = CAN_B,
+      .frame.idType = CAN_Standard,
+      .frame.id = 0x35,
+    }
+  };
+}
+
+
+
+void CONFIG_CAN_TRANSMITER(void){
+  CANBUS_TRANSMITER_FRAMES[CAN_OUT_01] = (CANBusTransmiterTypedef){
+    .label = "oCAN0",
+    .timeout_ms = 1000,
+	.frequency_hz = 2,
+    .frame = {
+      .frame.CANBus = CAN_C,
+      .frame.idType = CAN_Standard,
+      .frame.id = 0x40,
+      .frame.dataLengthCode = 8,
+//      .frame.data = {0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48}
+    }
+  };
+
+  CANBUS_TRANSMITER_FRAMES[CAN_OUT_01] = (CANBusTransmiterTypedef){
+    .label = "oCAN1",
+    .timeout_ms = 1000,
+	.frequency_hz = 1,
+    .frame = {
+      .frame.CANBus = CAN_B,
+      .frame.idType = CAN_Standard,
+      .frame.id = 0x35,
+      .frame.dataLengthCode = 8,
+//      .frame.data = {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF}
+    }
+  };
+}
 
 

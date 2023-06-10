@@ -13,3 +13,7 @@
 void RTE_COMM_ReceiveCommunucationData(){
 
 }
+
+void RTE_COMM_SendCommunicationData(){
+
+}

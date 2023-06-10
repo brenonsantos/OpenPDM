@@ -77,15 +77,15 @@ typedef enum{
 }AnalogDigitalInputType;
 
 typedef enum{
+  CAN_IN_00,
   CAN_IN_01,
   CAN_IN_02,
-  CAN_IN_03,
   NUM_OF_CAN_RECEIVERS
 }CanBusReceiverType;
 
 typedef enum{
+  CAN_OUT_00,
   CAN_OUT_01,
-  CAN_OUT_02,
   NUM_OF_CAN_TRANSMITERS
 }CanBusTransmiterType;
 

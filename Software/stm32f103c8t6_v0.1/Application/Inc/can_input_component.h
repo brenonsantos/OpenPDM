@@ -11,17 +11,30 @@
 #include "opdm_cfg.h"
 #include "pdm_rte.h"
 
+typedef enum{
+  CAN_MSG_NOT_RECEIVED = 0,
+  CAN_MSG_RECEIVED,
+}CANBusReceivedMessageStatus;
 
+typedef enum{
+  CAN_MSG_SIZE_1FRAME = 0,
+  CAN_MSG_SIZE_2FRAME,
+  CAN_MSG_SIZE_4FRAME,
+  CAN_MSG_SIZE_8FRAME
+}CANBusFrameSize;
 
-#define MAX_LABEL_SIZE 4
+#define MAX_CAN_LABEL_SIZE 8
 
 typedef struct{
-  const char label[MAX_LABEL_SIZE];
-  const PDMHAL_CAN_MessageFrame frame;
-  const uint32_t timeout;
-  const uint8_t frequency;
+  CANBusReceivedMessageStatus status;
+  char label[MAX_CAN_LABEL_SIZE];
+  PDMHAL_CAN_MessageFrame frame;
+  uint32_t timeout_ms;
+  CANBusFrameSize size;
 }CANBusReceiverTypedef;
 
 
+
 extern CANBusReceiverTypedef CANBUS_RECEIVER_FRAMES[NUM_OF_CAN_RECEIVERS];
+
 #endif /* __CAN_INPUT_COMPONENT_H_ */

@@ -5,4 +5,6 @@
  *      Author: breno
  */
 
+#include "can_input_component.h"
 
+CANBusReceiverTypedef CANBUS_RECEIVER_FRAMES[NUM_OF_CAN_RECEIVERS];
