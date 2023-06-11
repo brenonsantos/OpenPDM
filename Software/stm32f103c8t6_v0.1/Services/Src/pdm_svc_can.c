@@ -8,8 +8,8 @@
 
 #include <pdm_svc_can.h>
 
-uint8_t SVC_CAN_TranmistCanB(PDMHAL_CAN_MessageFrame *tmpCanMsg);
-uint8_t SVC_CAN_TranmistCanC(PDMHAL_CAN_MessageFrame *tmpCanMsg);
+uint8_t SVC_CAN_TransmitCanB(PDMHAL_CAN_MessageFrame *tmpCanMsg);
+uint8_t SVC_CAN_TransmitCanC(PDMHAL_CAN_MessageFrame *tmpCanMsg);
 PDMHAL_CAN_MessageFrame SVC_CAN_ReceiveCanB(void);
 PDMHAL_CAN_MessageFrame SVC_CAN_ReceiveCanC(void);
 
@@ -18,9 +18,9 @@ uint8_t SVC_CAN_Transmit(PDMHAL_CAN_MessageFrame *tmpCanMsg){
   uint8_t error_code = 0;
   switch (tmpCanMsg->frame.CANBus){
 	case CAN_B:
-	  return SVC_CAN_TranmistCanB(tmpCanMsg);
+	  return SVC_CAN_TransmitCanB(tmpCanMsg);
 	case CAN_C:
-	  return SVC_CAN_TranmistCanC(tmpCanMsg);
+	  return SVC_CAN_TransmitCanC(tmpCanMsg);
 	default:
 	  error_code = 1;
   }
@@ -56,7 +56,7 @@ uint8_t SVC_CAN_Receive(PDMHAL_CAN_MessageFrame *tmpCanMsg){
 }
 
 
-uint8_t SVC_CAN_TranmistCanC(PDMHAL_CAN_MessageFrame *tmpCanMsg){
+uint8_t SVC_CAN_TransmitCanC(PDMHAL_CAN_MessageFrame *tmpCanMsg){
 
   CANC_MSG msg;
   msg.frame.idType 	= tmpCanMsg->frame.idType;
@@ -74,6 +74,6 @@ uint8_t SVC_CAN_TranmistCanC(PDMHAL_CAN_MessageFrame *tmpCanMsg){
   return PDMHAL_CANC_Transmit(&msg);
 }
 
-uint8_t SVC_CAN_TranmistCanB(PDMHAL_CAN_MessageFrame *tmpCanMsg){
+uint8_t SVC_CAN_TransmitCanB(PDMHAL_CAN_MessageFrame *tmpCanMsg){
   return PDMHAL_CANB_Transmit(tmpCanMsg);
 }

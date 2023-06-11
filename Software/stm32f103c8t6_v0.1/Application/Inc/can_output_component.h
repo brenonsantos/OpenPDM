@@ -13,21 +13,29 @@
 
 #define MAX_CAN_LABEL_SIZE 8
 
+#define MAX_16Bits
+
+typedef uint8_t (*CanTransmitCallback)(PDMHAL_CAN_MessageFrame *frame);
+
 typedef struct{
   char label[MAX_CAN_LABEL_SIZE];
   PDMHAL_CAN_MessageFrame frame;
   uint32_t timeout_ms;
   uint8_t frequency_hz;
+  CanTransmitCallback callback;
 }CANBusTransmiterTypedef;
 
 extern CANBusTransmiterTypedef CANBUS_TRANSMITER_FRAMES[NUM_OF_CAN_TRANSMITERS];
 
-void CAN_OUTPUT_Transmit_CurrentSense(CurrentOutputsTypedef output);
-void CAN_OUTPUT_Transmit_VoltageSense(CurrentOutputsTypedef output);
-void CAN_OUTPUT_Transmit_InputReading(AnalogDigitalInputType input);
+void split16Bits(uint16_t value, uint8_t* result);
 
-void CAN_OUTPUT_Transmit_8bits(uint8_t data);
-void CAN_OUTPUT_Transmit_16bits(uint8_t data);
+//void CAN_OUTPUT_Transmit_CurrentSense(PDMHAL_CAN_MessageFrame* frame, CurrentOutputsTypedef output);
+//void CAN_OUTPUT_Transmit_VoltageSense(PDMHAL_CAN_MessageFrame* frame, CurrentOutputsTypedef output);
+//void CAN_OUTPUT_Transmit_InputReading(PDMHAL_CAN_MessageFrame* frame, AnalogDigitalInputType input);
+
+void CAN_OUTPUT_Transmit_16bits(PDMHAL_CAN_MessageFrame* frame, uint16_t* data, uint8_t dataLength);
+void CAN_OUTPUT_Transmit(PDMHAL_CAN_MessageFrame* frame, uint8_t* data, uint8_t dataLengthBytes);
+
 
 
 #endif /* __CAN_OUTPUT_COMPONENT_H_ */

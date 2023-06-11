@@ -11,6 +11,8 @@
 extern CANBusReceiverTypedef CANBUS_RECEIVER_FRAMES[NUM_OF_CAN_RECEIVERS];
 extern CANBusTransmiterTypedef CANBUS_TRANSMITER_FRAMES[NUM_OF_CAN_TRANSMITERS];
 
+void CONFIG_CAN_RECEIVERS(void);
+void CONFIG_CAN_TRANSMITER(void);
 
 /* TODO: this is a temporary solution. Probably it shouldn't receive void, but the CAN messages and the inputs readings.
 
@@ -42,21 +44,27 @@ uint8_t OUTPUT_CONDITION(condition_t condition_function){
 }
 
 uint8_t HC0_OUTPUT_CONDITION(void){
-	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 1000)
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 100)
 		return TRUE;
 	return FALSE;
 }
 
 uint8_t HC1_OUTPUT_CONDITION(void){
-    return FALSE;
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 200)
+		return TRUE;
+	return FALSE;
 }
 
 uint8_t HC2_OUTPUT_CONDITION(void){
-    return FALSE;
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 300)
+		return TRUE;
+	return FALSE;
 }
 
 uint8_t HC3_OUTPUT_CONDITION(void){
-    return FALSE;
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 400)
+		return TRUE;
+	return FALSE;
 }
 
 uint8_t LC0_OUTPUT_CONDITION(void){
@@ -66,29 +74,40 @@ uint8_t LC0_OUTPUT_CONDITION(void){
 }
 
 uint8_t LC1_OUTPUT_CONDITION(void){
-    return FALSE;
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 600)
+		return TRUE;
+	return FALSE;
 }
 
 uint8_t LC2_OUTPUT_CONDITION(void){
-    return FALSE;
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 700)
+		return TRUE;
+	return FALSE;
 }
 
 uint8_t LC3_OUTPUT_CONDITION(void){
-    return FALSE;
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 800)
+		return TRUE;
+	return FALSE;
 }
 
-uint8_t CAN0_OUTPUT_FRAME(void){
-  CAN_OUTPUT_Transmit_CurrentSense(LC0);
-  return TRUE;
-//  CAN_OUTPUT_Transmit_32to16bits();
-//  CAN_OUTPUT_Transmit_32to32bits();
+/*
+ * you can only transmit up to 8x8bytes per transmit!
+ */
 
-//  uint8_t dlc = 8;
-//  uint8_t data[dlc];
-//  uint32_t voltage = 2534;
-//  data[0] = voltage;
-//
+uint8_t CAN0_OUTPUT_CALLBACK(PDMHAL_CAN_MessageFrame* frame){
+  uint16_t values[4] = {(uint16_t)ANALOG_DIGITAL_INPUT[INPUT_00].value,
+	  (uint16_t)ANALOG_DIGITAL_INPUT[INPUT_01].value,
+	  (uint16_t)ANALOG_DIGITAL_INPUT[INPUT_02].value,
+	  0x01
+  };
+  uint8_t dataLength = 8;
+  CAN_OUTPUT_Transmit_16bits(frame, values, dataLength);
+  return TRUE;
+}
 //  CANBUS_TRANSMITER_FRAMES[CAN_OUT_00].frame->data = {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
+uint8_t CAN1_OUTPUT_CALLBACK(PDMHAL_CAN_MessageFrame* frame){
+return 1;
 }
 
 
@@ -252,6 +271,10 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
 };
 
 
+void PDM_APPLY_CONFIG(void){
+  CONFIG_CAN_RECEIVERS();
+  CONFIG_CAN_TRANSMITER();
+}
 
 void CONFIG_CAN_RECEIVERS(void){
   CANBUS_RECEIVER_FRAMES[CAN_IN_00] = (CANBusReceiverTypedef){
@@ -294,10 +317,11 @@ void CONFIG_CAN_RECEIVERS(void){
 
 
 void CONFIG_CAN_TRANSMITER(void){
-  CANBUS_TRANSMITER_FRAMES[CAN_OUT_01] = (CANBusTransmiterTypedef){
+  CANBUS_TRANSMITER_FRAMES[CAN_OUT_00] = (CANBusTransmiterTypedef){
     .label = "oCAN0",
     .timeout_ms = 1000,
 	.frequency_hz = 2,
+	.callback = CAN0_OUTPUT_CALLBACK,
     .frame = {
       .frame.CANBus = CAN_C,
       .frame.idType = CAN_Standard,
@@ -311,8 +335,9 @@ void CONFIG_CAN_TRANSMITER(void){
     .label = "oCAN1",
     .timeout_ms = 1000,
 	.frequency_hz = 1,
+	.callback = CAN1_OUTPUT_CALLBACK,
     .frame = {
-      .frame.CANBus = CAN_B,
+      .frame.CANBus = CAN_C,
       .frame.idType = CAN_Standard,
       .frame.id = 0x35,
       .frame.dataLengthCode = 8,

@@ -90,6 +90,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   PDMHAL_Init();
   RTE_Init();
+  PDM_APPLY_CONFIG();
   uint8_t hasOutputBeenUpdated = FALSE;
   /* USER CODE END 2 */
 //  CANC_MSG txMessage;
@@ -110,7 +111,7 @@ int main(void)
 //		  continue;
 //	  }
 //	  RTE_INPUT_PollInputs();
-//	  RTE_COMM_ReceiveCommunucationData();
+	  RTE_COMM_ReceiveCommunicationData();
 
 	  /* Update all status */
 	  if (hasOutputBeenUpdated){
@@ -119,7 +120,7 @@ int main(void)
 
 	  /* Write all outputs */
 	  RTE_OUTPUT_WriteOutputs();
-//	  RTE_COMM_SendCommunicationData();
+	  RTE_COMM_SendCommunicationData();
 
     /* USER CODE END WHILE */
 

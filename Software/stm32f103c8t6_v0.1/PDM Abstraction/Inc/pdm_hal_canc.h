@@ -11,12 +11,6 @@
 #include "pdm_canc_MCP2515.h"
 #include "pdm_hal_def.h"
 
-typedef enum{
-	CANB_EN = 0,
-	CANB_ERR,
-	CANB_STB,
-	NUM_OF_CANB_PINS
-}CANB_PINS_TYPE;
 
 typedef enum{
 	CANC_INTERRUPT = 0,

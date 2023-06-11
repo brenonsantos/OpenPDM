@@ -8,7 +8,7 @@
 #ifndef __PDM_DEF_H
 #define __PDM_DEF_H
 
-
+typedef uint8_t (*condition_t)(void);
 
 #define TRUE 1
 #define FALSE 0

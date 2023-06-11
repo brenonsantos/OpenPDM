@@ -65,16 +65,19 @@
 
 #define MAX_LABEL_SIZE 4
 
-uint8_t HC0_OUTPUT_CONDITION(void);
-uint8_t HC1_OUTPUT_CONDITION(void);
-uint8_t HC2_OUTPUT_CONDITION(void);
-uint8_t HC3_OUTPUT_CONDITION(void);
+//uint8_t OUTPUT_CONDITION(condition_t condition_function);
 
-uint8_t LC0_OUTPUT_CONDITION(void);
-uint8_t LC1_OUTPUT_CONDITION(void);
-uint8_t LC2_OUTPUT_CONDITION(void);
-uint8_t LC3_OUTPUT_CONDITION(void);
+//uint8_t HC0_OUTPUT_CONDITION(void);
+//uint8_t HC1_OUTPUT_CONDITION(void);
+//uint8_t HC2_OUTPUT_CONDITION(void);
+//uint8_t HC3_OUTPUT_CONDITION(void);
+//
+//uint8_t LC0_OUTPUT_CONDITION(void);
+//uint8_t LC1_OUTPUT_CONDITION(void);
+//uint8_t LC2_OUTPUT_CONDITION(void);
+//uint8_t LC3_OUTPUT_CONDITION(void);
 
+void PDM_APPLY_CONFIG(void);
 
 
 //extern const

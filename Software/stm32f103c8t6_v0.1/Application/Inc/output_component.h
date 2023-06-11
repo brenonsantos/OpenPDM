@@ -13,7 +13,7 @@
 
 #define MAX_LABEL_SIZE 4
 
-typedef uint8_t (*condition_t)(void);
+//typedef uint8_t (*condition_t)(void);/
 
 typedef enum{
 	NO_FAULT = 0,

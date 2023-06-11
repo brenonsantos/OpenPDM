@@ -54,6 +54,8 @@ HAL_StatusTypeDef PDMHAL_CANB_Init (void) {
   if (error_code != HAL_OK)
 	return error_code;
 
+  void PDMHAL_CANB_SetModeNormal(void);
+
   return HAL_OK;
 }
 
@@ -106,6 +108,7 @@ PDMHAL_CAN_MessageFrame* PDMHAL_CANB_Receive (void) {
   return NULL;
 }
 
+
 HAL_StatusTypeDef PDMHAL_CANB_NewConfigFilter (CAN_FilterTypeDef *newFilter) {
   sFilterConfig.FilterActivation = newFilter->FilterActivation;
   sFilterConfig.FilterBank = newFilter->FilterBank;
@@ -118,6 +121,16 @@ HAL_StatusTypeDef PDMHAL_CANB_NewConfigFilter (CAN_FilterTypeDef *newFilter) {
   sFilterConfig.SlaveStartFilterBank = newFilter->SlaveStartFilterBank;
   return CANB_ConfigFilter ();
 
+}
+
+void PDMHAL_CANB_SetModeNormal(void){
+  HAL_GPIO_WritePin(CANB_EN_GPIO_Port, CANB_EN_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(CANB_STB_GPIO_Port, CANB_STB_Pin, GPIO_PIN_SET);
+}
+
+void PDMHAL_CANB_SetModeSleep(void){
+  HAL_GPIO_WritePin(CANB_EN_GPIO_Port, CANB_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(CANB_STB_GPIO_Port, CANB_STB_Pin, GPIO_PIN_RESET);
 }
 
 /** CANB Private Variables */

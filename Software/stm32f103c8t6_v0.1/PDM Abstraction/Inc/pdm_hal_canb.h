@@ -11,6 +11,12 @@
 #include "pdm_hal_def.h"
 
 
+typedef enum{
+	CANB_EN = 0,
+	CANB_ERR,
+	CANB_STB,
+	NUM_OF_CANB_PINS
+}CANB_PINS_TYPE;
 
 HAL_StatusTypeDef PDMHAL_CANB_Init(void);
 HAL_StatusTypeDef PDMHAL_CANB_Transmit(PDMHAL_CAN_MessageFrame *tmpCanMsg);
