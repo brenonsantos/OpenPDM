@@ -17,6 +17,9 @@
 #include "pdm_hal_io.h"
 #include "pdm_hal_spi.h"
 
+#if USE_USB_OVER_CANB
+#include "usb_device.h"
+#endif
 
 void PDMHAL_Init(void);
 

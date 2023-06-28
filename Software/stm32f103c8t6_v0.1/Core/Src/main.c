@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -43,16 +44,17 @@
 
 RTC_HandleTypeDef hrtc;
 
+//SPI_HandleTypeDef hspi2;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
 static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
-void PollReadings(void);
+void blinkStatusLed(uint32_t period);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -67,13 +69,13 @@ void PollReadings(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  PDMHAL_Init();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+//  HAL_Init();
 
   /* USER CODE BEGIN Init */
   /* USER CODE END Init */
@@ -85,49 +87,62 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
+
   MX_RTC_Init();
+
   /* USER CODE BEGIN 2 */
-  PDMHAL_Init();
+
+
   RTE_Init();
   PDM_APPLY_CONFIG();
-  uint8_t hasOutputBeenUpdated = FALSE;
-  /* USER CODE END 2 */
-//  CANC_MSG txMessage;
-//  CANC_MSG rxMessage;
-//  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
 
+  /* USER CODE END 2 */
+  HAL_Delay(1000);
+//  CurrentOutputsTypedef debuger = 8;
+  for (uint8_t i = 0; i<8; i++){
+	PDMHAL_SetCurrentOutput(i);
+	HAL_Delay(100);
+  }
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
 	  /* Update all measurements */
-	  hasOutputBeenUpdated = RTE_OUTPUT_UpdateSense();
+	  RTE_OUTPUT_UpdateSense();
 
-//	  if (RTE_PDM_UpdateSystemIntegrity() == FAULT){
+	  if (SVC_PDM_UpdateSystemIntegrity() == PDM_FAULT){
 //		  RTE_PDM_HandleSystemFault();
-////		  RTE_OUTPUT_PowerOffAllOutputs();
-////		  RTE_COMM_SendSystemIntegrityFault();
-//		  HAL_Delay(100);
-//		  continue;
-//	  }
-//	  RTE_INPUT_PollInputs();
+		  RTE_OUTPUT_PowerOffAllOutputs();
+		  RTE_COMM_SendSystemIntegrityFault();
+		  HAL_Delay(100);
+		  continue;
+	  }
+	  RTE_INPUT_PollInputs();
 	  RTE_COMM_ReceiveCommunicationData();
 
 	  /* Update all status */
-	  if (hasOutputBeenUpdated){
-		  RTE_OUTPUT_UpdateFault();
-	  }
+	  RTE_OUTPUT_UpdateFault();
 
 	  /* Write all outputs */
 	  RTE_OUTPUT_WriteOutputs();
 	  RTE_COMM_SendCommunicationData();
-
+  /* USER CODE BEGIN 3 */
+	  blinkStatusLed(1000);
     /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
   }
-
   /* USER CODE END 3 */
+}
+
+void blinkStatusLed(uint32_t period) {
+    static uint32_t previousTick = 0;
+    uint32_t currentTick = HAL_GetTick();
+
+    if ((currentTick - previousTick) >= period) {
+//        PDMHAL_ToggleStatusLed(LED_Internal);
+        PDMHAL_ToggleStatusLed(LED_Status);
+        previousTick = currentTick;
+    }
 }
 
 /**
@@ -169,14 +184,17 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC
+                              |RCC_PERIPHCLK_USB;
   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
+  PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
   }
 }
+
 /**
   * @brief RTC Initialization Function
   * @param None
@@ -200,7 +218,7 @@ static void MX_RTC_Init(void)
   */
   hrtc.Instance = RTC;
   hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
-  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_ALARM;
+  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_NONE;
   if (HAL_RTC_Init(&hrtc) != HAL_OK)
   {
     Error_Handler();
@@ -235,105 +253,7 @@ static void MX_RTC_Init(void)
 
 }
 
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(INTERNAL_LED_GPIO_Port, INTERNAL_LED_Pin, GPIO_PIN_SET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, MUX_INPUTS_A1_Pin|MUX_INPUTS_A2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, STATUS_LED_Pin|GATE_LC3_SIG_Pin|GATE_LC2_SIG_Pin|GATE_LC1_SIG_Pin
-                          |GATE_LC0_SIG_Pin|CANC_INTERRUPT_Pin|CANB_STB_Pin|MUX_CUR_SENSE_A3_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GATE_HC0_SIG_Pin|GATE_HC1_SIG_Pin|GATE_HC2_SIG_Pin|GATE_HC3_SIG_Pin
-                          |CAN_CS_Pin|MUX_CUR_SENSE_A2_Pin|MUX_CUR_SENSE_A1_Pin|MUX_CUR_SENSE_A0_Pin
-                          |CANB_EN_Pin|MUX_INPUTS_A0_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : INTERNAL_LED_Pin */
-  GPIO_InitStruct.Pin = INTERNAL_LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(INTERNAL_LED_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : MUX_INPUTS_A1_Pin MUX_INPUTS_A2_Pin */
-  GPIO_InitStruct.Pin = MUX_INPUTS_A1_Pin|MUX_INPUTS_A2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : STATUS_LED_Pin GATE_LC3_SIG_Pin GATE_LC2_SIG_Pin GATE_LC1_SIG_Pin
-                           GATE_LC0_SIG_Pin CANC_INTERRUPT_Pin MUX_CUR_SENSE_A3_Pin */
-  GPIO_InitStruct.Pin = STATUS_LED_Pin|GATE_LC3_SIG_Pin|GATE_LC2_SIG_Pin|GATE_LC1_SIG_Pin
-                          |GATE_LC0_SIG_Pin|CANC_INTERRUPT_Pin|MUX_CUR_SENSE_A3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : GATE_HC0_SIG_Pin GATE_HC1_SIG_Pin GATE_HC2_SIG_Pin GATE_HC3_SIG_Pin
-                           MUX_CUR_SENSE_A2_Pin MUX_CUR_SENSE_A1_Pin MUX_CUR_SENSE_A0_Pin CANB_EN_Pin
-                           MUX_INPUTS_A0_Pin */
-  GPIO_InitStruct.Pin = GATE_HC0_SIG_Pin|GATE_HC1_SIG_Pin|GATE_HC2_SIG_Pin|GATE_HC3_SIG_Pin
-                          |MUX_CUR_SENSE_A2_Pin|MUX_CUR_SENSE_A1_Pin|MUX_CUR_SENSE_A0_Pin|CANB_EN_Pin
-                          |MUX_INPUTS_A0_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : CAN_CS_Pin */
-  GPIO_InitStruct.Pin = CAN_CS_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(CAN_CS_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : CANB_ERR_Pin */
-  GPIO_InitStruct.Pin = CANB_ERR_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(CANB_ERR_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : CANB_STB_Pin */
-  GPIO_InitStruct.Pin = CANB_STB_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(CANB_STB_GPIO_Port, &GPIO_InitStruct);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
-}
-
 /* USER CODE BEGIN 4 */
-
-void PollReadings(void){
-	RTE_PollInputs();
-	RTE_PollOuputCurrentReading();
-	//RTE_ReadCAN();
-}
-
 /* USER CODE END 4 */
 
 /**
@@ -350,36 +270,6 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-//	if(CANC_Receive(&rxMessage)){
-//	  txMessage.frame.idType = rxMessage.frame.idType;
-//	  txMessage.frame.id = rxMessage.frame.id;
-//	  txMessage.frame.dlc = rxMessage.frame.dlc;
-//	  txMessage.frame.data0++;
-//	  txMessage.frame.data1 = rxMessage.frame.data1;
-//	  txMessage.frame.data2 = rxMessage.frame.data2;
-//	  txMessage.frame.data3 = rxMessage.frame.data3;
-//	  txMessage.frame.data4 = rxMessage.frame.data4;
-//	  txMessage.frame.data5 = rxMessage.frame.data5;
-//	  txMessage.frame.data6 = rxMessage.frame.data6;
-//	  txMessage.frame.data7 = rxMessage.frame.data7;
-//	  CANC_Transmit(&txMessage);
-//	}
-
-//	txMessage.frame.idType = dSTANDARD_CAN_MSG_ID_2_0B;
-//	txMessage.frame.id = 0x0A;
-//	txMessage.frame.dlc = 8;
-//	txMessage.frame.data0 = 0;
-//	txMessage.frame.data1 = 1;
-//	txMessage.frame.data2 = 2;
-//	txMessage.frame.data3 = 3;
-//	txMessage.frame.data4 = 4;
-//	txMessage.frame.data5 = 5;
-//	txMessage.frame.data6 = 6;
-//	txMessage.frame.data7 = 7;
-//	CANC_Transmit(&txMessage);
-//
-//	HAL_Delay(100);
 
 #ifdef  USE_FULL_ASSERT
 /**

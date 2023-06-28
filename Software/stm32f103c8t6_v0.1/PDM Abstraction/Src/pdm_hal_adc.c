@@ -50,6 +50,15 @@ HAL_StatusTypeDef PDMHAL_ADC_Init(void){
 	HAL_ADCEx_Calibration_Start(&adinput_adc_handler);
 	HAL_ADCEx_Calibration_Start(&cvsense_adc_handler);
 
+	// Discard first read
+	HAL_ADC_Start(&adinput_adc_handler);
+	HAL_ADC_Start(&cvsense_adc_handler);
+	HAL_Delay(10);
+	HAL_ADC_GetValue(&adinput_adc_handler);
+	HAL_ADC_GetValue(&cvsense_adc_handler);
+	HAL_Delay(10);
+	HAL_ADC_Stop(&adinput_adc_handler);
+	HAL_ADC_Stop(&cvsense_adc_handler);
 	return ADC_Error;
 }
 
@@ -179,21 +188,21 @@ static PDMHAL_AdcStatusType PDMHAL_ADC_CheckConversionStatus(ADC_HandleTypeDef* 
 void PDMHAL_ADC_StartNewVoltageReading(PDMHAL_VoltageSenseMapType new_sense){
   HAL_ADC_Stop(&cvsense_adc_handler);
   set_voltage_sense_multiplexer(new_sense);
-  HAL_Delay(1);
+  HAL_Delay(3);
   HAL_ADC_Start(&cvsense_adc_handler);
 }
 
 void PDMHAL_ADC_StartNewCurrentReading(PDMHAL_CurrentSenseMapType new_sense){
   HAL_ADC_Stop(&cvsense_adc_handler);
   set_current_sense_multiplexer(new_sense);
-  HAL_Delay(1);
+  HAL_Delay(3);
   HAL_ADC_Start(&cvsense_adc_handler);
 }
 
 void PDMHAL_ADC_StartNewInputReading(AnalogDigitalInputType new_input){
 	HAL_ADC_Stop(&adinput_adc_handler);
 	set_ad_input_multiplexer(new_input);
-	HAL_Delay(1);
+	HAL_Delay(3);
 	HAL_ADC_Start(&adinput_adc_handler);
 }
 
@@ -217,19 +226,39 @@ uint32_t PDMHAL_ADC_ReadInput(AnalogDigitalInputType reading_index){
     return reading;
 }
 
+void voltage_average_init(uint32_t (*data)[VOLTAGE_WINDOW_SIZE]){
+  for (uint8_t output = 0; output < NUM_OF_OUTPUTS; output++){
+	for (uint8_t window = 0; window < VOLTAGE_WINDOW_SIZE; window++){
+	  data[output][window] = VOLTAGE_CONVERSION_TO_12BITS(14.0f);
+	}
+  }
+}
+
 uint32_t PDMHAL_ADC_ReadOutputVoltage(CurrentOutputsTypedef reading_index){
     static uint32_t moving_average_data[NUM_OF_OUTPUTS][VOLTAGE_WINDOW_SIZE] = {0};
+//    static uint8_t first_cycle = TRUE;
+    static uint8_t counter[NUM_OF_AD_INPUTS] = {0};
 
     uint32_t reading = HAL_ADC_GetValue(&cvsense_adc_handler);
-    reading = moving_average(moving_average_data[reading_index], reading, VOLTAGE_WINDOW_SIZE);
+
+    if (counter[reading_index] < VOLTAGE_WINDOW_SIZE){
+      counter[reading_index]++;
+    }
+
+    reading = moving_average(moving_average_data[reading_index], reading, counter[reading_index]);
     return reading;
 }
 
 uint32_t PDMHAL_ADC_ReadOutputCurrent(CurrentOutputsTypedef reading_index){
     static uint32_t moving_average_data[NUM_OF_OUTPUTS][CURRENT_WINDOW_SIZE] = {0};
+    static uint8_t counter[NUM_OF_OUTPUTS] = {0};
+
+    if (counter[reading_index] < CURRENT_WINDOW_SIZE){
+      counter[reading_index]++;
+    }
 
     uint32_t reading = HAL_ADC_GetValue(&cvsense_adc_handler);
-    reading = moving_average(moving_average_data[reading_index], reading, CURRENT_WINDOW_SIZE);
+    reading = moving_average(moving_average_data[reading_index], reading, counter[reading_index]);
     return reading;
 }
 
@@ -241,7 +270,7 @@ uint32_t moving_average(uint32_t *data, uint32_t new_sample, MOVING_AVERAGE_WIND
 	}
 	data[window_size-1] = new_sample;
 	sum += new_sample;
-	return (sum / window_size);
+	return (uint32_t)(sum / window_size);
 }
 
 void adc_error_handler(){

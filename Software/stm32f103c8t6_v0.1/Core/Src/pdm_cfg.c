@@ -44,13 +44,14 @@ uint8_t OUTPUT_CONDITION(condition_t condition_function){
 }
 
 uint8_t HC0_OUTPUT_CONDITION(void){
-	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 100)
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > VOLTAGE_CONVERSION_TO_12BITS(5.0))
 		return TRUE;
 	return FALSE;
 }
 
 uint8_t HC1_OUTPUT_CONDITION(void){
-	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 200)
+  static uint32_t twovolts = 4*4095*10/(46*3.3);
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > twovolts)
 		return TRUE;
 	return FALSE;
 }
@@ -58,11 +59,11 @@ uint8_t HC1_OUTPUT_CONDITION(void){
 uint8_t HC2_OUTPUT_CONDITION(void){
 	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 300)
 		return TRUE;
-	return FALSE;
+	return TRUE;
 }
 
 uint8_t HC3_OUTPUT_CONDITION(void){
-	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 400)
+	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > VOLTAGE_CONVERSION_TO_12BITS(2.3f))
 		return TRUE;
 	return FALSE;
 }
@@ -82,13 +83,13 @@ uint8_t LC1_OUTPUT_CONDITION(void){
 uint8_t LC2_OUTPUT_CONDITION(void){
 	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 700)
 		return TRUE;
-	return FALSE;
+	return TRUE;
 }
 
 uint8_t LC3_OUTPUT_CONDITION(void){
 	if (ANALOG_DIGITAL_INPUT[INPUT_00].value > 800)
 		return TRUE;
-	return FALSE;
+	return TRUE;
 }
 
 /*
@@ -96,10 +97,11 @@ uint8_t LC3_OUTPUT_CONDITION(void){
  */
 
 uint8_t CAN0_OUTPUT_CALLBACK(PDMHAL_CAN_MessageFrame* frame){
+  static uint16_t counter = 0;
   uint16_t values[4] = {(uint16_t)ANALOG_DIGITAL_INPUT[INPUT_00].value,
-	  (uint16_t)ANALOG_DIGITAL_INPUT[INPUT_01].value,
+	  0xAA55,
 	  (uint16_t)ANALOG_DIGITAL_INPUT[INPUT_02].value,
-	  0x01
+	  counter++
   };
   uint8_t dataLength = 8;
   CAN_OUTPUT_Transmit_16bits(frame, values, dataLength);
@@ -107,7 +109,14 @@ uint8_t CAN0_OUTPUT_CALLBACK(PDMHAL_CAN_MessageFrame* frame){
 }
 //  CANBUS_TRANSMITER_FRAMES[CAN_OUT_00].frame->data = {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
 uint8_t CAN1_OUTPUT_CALLBACK(PDMHAL_CAN_MessageFrame* frame){
-return 1;
+  uint16_t values[4] = {0xFF,
+	  0xFA,
+	  0xAA,
+	  0x1F
+  };
+  uint8_t dataLength = 8;
+  CAN_OUTPUT_Transmit_16bits(frame, values, dataLength);
+  return TRUE;
 }
 
 
@@ -120,7 +129,7 @@ InputConfigTypedef ANALOG_DIGITAL_INPUT[] ={
                 .value = 0,
 		},
         [INPUT_01] = {
-                .enable = FALSE,
+                .enable = TRUE,
                 .label = "IN1",
 				.input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
@@ -138,7 +147,7 @@ InputConfigTypedef ANALOG_DIGITAL_INPUT[] ={
                 .value = 0,
         },
         [INPUT_04] = {
-                .enable = FALSE,
+                .enable = TRUE,
                 .label = "IN4",
                 .input_type = DIGITAL_ACTIVE_H,
                 .value = 0,
@@ -196,7 +205,7 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
         .reset_enable = TRUE,
         .reset_retry_attempts = 3,
         .reset_retry_delay_seconds = 2,
-        .current_limit = HC_CURRENT_CONVERSION_TO_12BITS(5.0f),
+        .current_limit = HC_CURRENT_CONVERSION_TO_12BITS(10.0f),
         .inrush_time_limit_miliseconds = 1000,
         .max_voltage = VOLTAGE_CONVERSION_TO_12BITS(15.0f),
         .min_voltage = VOLTAGE_CONVERSION_TO_12BITS(9.0f),
@@ -206,11 +215,11 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
     [HC3] = {
         .enable = TRUE,
         .label = "HC3",
-        .reset_enable = FALSE,
+        .reset_enable = TRUE,
         .reset_retry_attempts = 3,
-        .reset_retry_delay_seconds = 2,
-        .current_limit = HC_CURRENT_CONVERSION_TO_12BITS(0.5f),
-        .inrush_time_limit_miliseconds = 1000,
+        .reset_retry_delay_seconds = 3,
+        .current_limit = HC_CURRENT_CONVERSION_TO_12BITS(2.0f),
+        .inrush_time_limit_miliseconds = 2000,
         .max_voltage = VOLTAGE_CONVERSION_TO_12BITS(15.0f),
         .min_voltage = VOLTAGE_CONVERSION_TO_12BITS(9.0f),
         .max_current = HC_CURRENT_CONVERSION_TO_12BITS(HC_GLOBAL_MAX_CURRENT),
@@ -219,10 +228,10 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
     [LC0] = {
 		.enable = TRUE,
 		.label = "LC0",
-		.reset_enable = FALSE,
+		.reset_enable = TRUE,
 		.reset_retry_attempts = 3,
 		.reset_retry_delay_seconds = 2,
-		.current_limit = LC_CURRENT_CONVERSION_TO_12BITS(5.0f),
+		.current_limit = LC_CURRENT_CONVERSION_TO_12BITS(0.5f),
 		.inrush_time_limit_miliseconds = 1000,
         .max_voltage = VOLTAGE_CONVERSION_TO_12BITS(15.0f),
         .min_voltage = VOLTAGE_CONVERSION_TO_12BITS(9.0f),
@@ -232,10 +241,10 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
     [LC1] = {
         .enable = TRUE,
         .label = "LC1",
-        .reset_enable = FALSE,
+        .reset_enable = TRUE,
         .reset_retry_attempts = 3,
-        .reset_retry_delay_seconds = 2,
-        .current_limit = LC_CURRENT_CONVERSION_TO_12BITS(5.0f),
+        .reset_retry_delay_seconds = 5,
+        .current_limit = LC_CURRENT_CONVERSION_TO_12BITS(0.5f),
         .inrush_time_limit_miliseconds = 1000,
         .max_voltage = VOLTAGE_CONVERSION_TO_12BITS(15.0f),
         .min_voltage = VOLTAGE_CONVERSION_TO_12BITS(9.0f),
@@ -248,7 +257,7 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
         .reset_enable = FALSE,
         .reset_retry_attempts = 3,
         .reset_retry_delay_seconds = 2,
-        .current_limit = LC_CURRENT_CONVERSION_TO_12BITS(2.5f),
+        .current_limit = LC_CURRENT_CONVERSION_TO_12BITS(10.0f),
         .inrush_time_limit_miliseconds = 1000,
         .max_voltage = VOLTAGE_CONVERSION_TO_12BITS(15.0f),
         .min_voltage = VOLTAGE_CONVERSION_TO_12BITS(9.0f),
@@ -258,10 +267,10 @@ const CurrentOutputConfigTypedef CURRENT_OUTPUT_SETUP[] ={
     [LC3] = {
         .enable = TRUE,
         .label = "LC3",
-        .reset_enable = FALSE,
+        .reset_enable = TRUE,
         .reset_retry_attempts = 3,
         .reset_retry_delay_seconds = 2,
-        .current_limit = LC_CURRENT_CONVERSION_TO_12BITS(0.5f),
+        .current_limit = LC_CURRENT_CONVERSION_TO_12BITS(10.0f),
         .inrush_time_limit_miliseconds = 1000,
         .max_voltage = VOLTAGE_CONVERSION_TO_12BITS(15.0f),
         .min_voltage = VOLTAGE_CONVERSION_TO_12BITS(9.0f),
@@ -295,7 +304,7 @@ void CONFIG_CAN_RECEIVERS(void){
     .size = CAN_MSG_SIZE_1FRAME,
     .timeout_ms = 1000,
     .frame = {
-      .frame.CANBus = CAN_B,
+      .frame.CANBus = CAN_C,
       .frame.idType = CAN_Standard,
       .frame.id = 0x35,
     }
@@ -307,7 +316,7 @@ void CONFIG_CAN_RECEIVERS(void){
     .size = CAN_MSG_SIZE_1FRAME,
     .timeout_ms = 1000,
     .frame = {
-      .frame.CANBus = CAN_B,
+      .frame.CANBus = CAN_C,
       .frame.idType = CAN_Standard,
       .frame.id = 0x35,
     }
@@ -320,7 +329,7 @@ void CONFIG_CAN_TRANSMITER(void){
   CANBUS_TRANSMITER_FRAMES[CAN_OUT_00] = (CANBusTransmiterTypedef){
     .label = "oCAN0",
     .timeout_ms = 1000,
-	.frequency_hz = 2,
+	.frequency_hz = 0.1,
 	.callback = CAN0_OUTPUT_CALLBACK,
     .frame = {
       .frame.CANBus = CAN_C,
@@ -334,7 +343,7 @@ void CONFIG_CAN_TRANSMITER(void){
   CANBUS_TRANSMITER_FRAMES[CAN_OUT_01] = (CANBusTransmiterTypedef){
     .label = "oCAN1",
     .timeout_ms = 1000,
-	.frequency_hz = 1,
+	.frequency_hz = 0.5,
 	.callback = CAN1_OUTPUT_CALLBACK,
     .frame = {
       .frame.CANBus = CAN_C,

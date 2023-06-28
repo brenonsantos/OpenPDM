@@ -13,11 +13,15 @@ HAL_StatusTypeDef HAL_InitError, CANC_InitError, CANB_InitError, SPI_InitError,
 
 void PDMHAL_Init (void) {
   HAL_InitError = HAL_Init ();
-
+  PDMHAL_GPIO_Init();
   SPI_InitError = PDMHAL_SPI_Init ();
   ADC_InitError = PDMHAL_ADC_Init ();
   CANC_InitError = PDMHAL_CANC_Init (CANC_500KBPS);
-  CANB_InitError = PDMHAL_CANB_Init ();
 
-  /* Initi  */
+#if USE_USB_OVER_CANB
+  MX_USB_DEVICE_Init();
+#else
+  CANB_InitError = PDMHAL_CANB_Init ();
+#endif
+
 }

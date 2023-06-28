@@ -1,0 +1,18 @@
+TODO: Change the CAN msg callback to something like:
+
+			void uint16_to_uint8_array(uint16_t value, uint8_t *data) {
+			  data[0] = (uint8_t)(value & 0xFF);
+			  data[1] = (uint8_t)((value >> 8) & 0xFF);
+			}
+			
+			
+			uint8_t CAN0_OUTPUT_CALLBACK(PDMHAL_CAN_MessageFrame* frame){
+			  static uint8_t counter = 0;
+			  uint16_to_uint8_array((uint16_t)CURRENT_OUTPUT_CONTROL[LC2].value, frame->frame.data[0]);
+			  frame->frame.data[2] = CURRENT_OUTPUT_CONTROL[LC2].power_state,
+			  uint16_to_uint8_array((uint16_t)ANALOG_DIGITAL_INPUT[INPUT_01].value, frame->frame.data[3]);
+			  uint16_to_uint8_array((uint16_t)ANALOG_DIGITAL_INPUT[INPUT_02].value, frame->frame.data[5]);
+			  frame->frame.data[6] = counter++;
+			  frame->frame.data[7] = CURRENT_OUTPUT_SETUP[LC2].enable;
+			  return TRUE;
+			}

@@ -11,7 +11,7 @@
 #include "pdm_rte_def.h"
 
 // void RTE_InputsInit(void);
-void RTE_PollInputs(void);
+void RTE_INPUT_PollInputs(void);
 
 
 

@@ -21,7 +21,7 @@ typedef struct{
   char label[MAX_CAN_LABEL_SIZE];
   PDMHAL_CAN_MessageFrame frame;
   uint32_t timeout_ms;
-  uint8_t frequency_hz;
+  float frequency_hz;
   CanTransmitCallback callback;
 }CANBusTransmiterTypedef;
 

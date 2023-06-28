@@ -18,21 +18,23 @@ AnalogDigitalInputType getNextEnabledInput(AnalogDigitalInputType current_input)
 	return 0;
 }
 
-void RTE_PollInputs(void){
-	static AnalogDigitalInputType reading_index = NUM_OF_AD_INPUTS;
-	
-    PDMHAL_AdcStatusType conversion_status = PDMHAL_ADC_CheckConversionStatusInput();
-	switch(conversion_status){
-		case(BUSY):
-			return;
-		case(CONVERSION_COMPLETE):
-			ANALOG_DIGITAL_INPUT[reading_index].value = PDMHAL_ADC_ReadInput(reading_index);
-		case(READY):
-			reading_index = getNextEnabledInput(reading_index);
-			break;
-	}
+void RTE_INPUT_PollInputs (void) {
+  static AnalogDigitalInputType reading_index = 0;
 
-	PDMHAL_ADC_StartNewInputReading(reading_index);
+
+  PDMHAL_AdcStatusType conversion_status = PDMHAL_ADC_CheckConversionStatusInput ();
+  switch (conversion_status) {
+	case (BUSY):
+	  return;
+	case (CONVERSION_COMPLETE):
+	  ANALOG_DIGITAL_INPUT[reading_index].value = PDMHAL_ADC_ReadInput(reading_index);
+	  reading_index = getNextEnabledInput (reading_index);
+	  break;
+	case (READY):
+	  break;
+  }
+
+  PDMHAL_ADC_StartNewInputReading (reading_index);
 }
 
 uint32_t RTE_ReadInputValue(AnalogDigitalInputType input){

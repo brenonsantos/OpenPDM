@@ -7,6 +7,8 @@
 
 #include "output_component.h"
 
+#define VOLTAGE_FAULT_TIMEOUT 15
+
 OutputControlTypedef CURRENT_OUTPUT_CONTROL[NUM_OF_OUTPUTS];
 
 void OUTPUT_WriteOutputState(CurrentOutputsTypedef output, OutputStateTypedef state);
@@ -37,51 +39,57 @@ void OUTPUT_Reset(CurrentOutputsTypedef output){
 	   	CURRENT_OUTPUT_CONTROL[output].retry_timer = 0;
 }
 
-OutputStateTypedef OUTPUT_CalculateState(CurrentOutputsTypedef output){
-	OutputControlTypedef* output_control = &CURRENT_OUTPUT_CONTROL[output];
+OutputStateTypedef OUTPUT_CalculateState (CurrentOutputsTypedef output) {
+  OutputControlTypedef *output_control = &CURRENT_OUTPUT_CONTROL[output];
 
-	if(!CURRENT_OUTPUT_SETUP[output].enable){
-		OUTPUT_WriteOutputState(output, OUTPUT_DISABLED);
-		return OUTPUT_DISABLED;
+  if (!CURRENT_OUTPUT_SETUP[output].enable) {
+	OUTPUT_WriteOutputState (output, OUTPUT_DISABLED);
+	return OUTPUT_DISABLED;
+  }
+
+  if (!CURRENT_OUTPUT_SETUP[output].reset_enable
+	  && output_control->fault != NO_FAULT) {
+	OUTPUT_WriteOutputState (output, OUTPUT_FAULT);
+	return OUTPUT_FAULT;
+  }
+
+  if (output_control->fault != NO_FAULT
+	  && CURRENT_OUTPUT_SETUP[output].reset_enable) {
+
+	if (output_control->retry_attempts
+		>= CURRENT_OUTPUT_SETUP[output].reset_retry_attempts) {
+	  OUTPUT_WriteOutputState (output, OUTPUT_FAULT);
+	  return OUTPUT_FAULT;
 	}
 
-	if (!CURRENT_OUTPUT_SETUP[output].reset_enable && output_control->fault){
-		OUTPUT_WriteOutputState(output, OUTPUT_FAULT);
-		return OUTPUT_FAULT;
+	if (output_control->output_state != OUTPUT_WAITING_FOR_RESET) {
+	  output_control->retry_timer = HAL_GetTick ();
+	  OUTPUT_WriteOutputState (output, OUTPUT_WAITING_FOR_RESET);
+	  return OUTPUT_WAITING_FOR_RESET;
 	}
 
-	if (output_control->fault && CURRENT_OUTPUT_SETUP[output].reset_enable){
-
-		if (output_control->retry_attempts >= CURRENT_OUTPUT_SETUP[output].reset_retry_attempts){
-			OUTPUT_WriteOutputState(output, OUTPUT_FAULT);
-			return OUTPUT_FAULT;
-		}
-
-		if (output_control->output_state != OUTPUT_WAITING_FOR_RESET){
-			output_control->retry_timer = HAL_GetTick();
-			OUTPUT_WriteOutputState(output, OUTPUT_WAITING_FOR_RESET);
-			return OUTPUT_WAITING_FOR_RESET;
-		}
-
-		uint32_t time_since_reset_request = HAL_GetTick() - output_control->retry_timer;
-		if(time_since_reset_request < CURRENT_OUTPUT_SETUP[output].reset_retry_delay_seconds*1000){
-			OUTPUT_WriteOutputState(output, OUTPUT_WAITING_FOR_RESET);
-			return OUTPUT_WAITING_FOR_RESET;
-		}
-
-		output_control->retry_attempts++;
-		output_control->retry_timer = 0;
-		OUTPUT_WriteOutputState(output, OUTPUT_OK);
-		OUTPUT_ResetFault(output);
-		return OUTPUT_OK;
+	uint32_t time_since_reset_request = HAL_GetTick ()
+		- output_control->retry_timer;
+	if (time_since_reset_request < CURRENT_OUTPUT_SETUP[output].reset_retry_delay_seconds * 1000) {
+	  OUTPUT_WriteOutputState (output, OUTPUT_WAITING_FOR_RESET);
+	  return OUTPUT_WAITING_FOR_RESET;
 	}
 
-	OUTPUT_WriteOutputState(output, OUTPUT_OK);
+	output_control->retry_attempts++;
+	output_control->retry_timer = 0;
+	OUTPUT_WriteOutputState (output, OUTPUT_OK);
+	OUTPUT_ResetFault (output);
 	return OUTPUT_OK;
+  }
+
+  OUTPUT_WriteOutputState (output, OUTPUT_OK);
+  return OUTPUT_OK;
 }
 
 OutputFaultStateTypedef CheckCurrentCondition(CurrentOutputsTypedef output){
+
 	OutputControlTypedef* output_control = &CURRENT_OUTPUT_CONTROL[output];
+
 	/* The following code checks if the output current reading is above the current limit:
 	 *
 	 * If it is, it checks if the fault flag is active, meaning that the fault has already been detected,
@@ -111,43 +119,68 @@ OutputFaultStateTypedef CheckCurrentCondition(CurrentOutputsTypedef output){
 
 OutputFaultStateTypedef CheckVoltageCondition(CurrentOutputsTypedef output){
 	OutputControlTypedef* output_control = &CURRENT_OUTPUT_CONTROL[output];
+	static uint8_t counter[NUM_OF_OUTPUTS] = {0};
+	if (!CURRENT_OUTPUT_SETUP[output].enable){
+	  counter[output] = 0;
+	  return NO_FAULT;
+	}else if (CURRENT_OUTPUT_CONTROL[output].power_state == OUTPUT_OFF) {
+		counter[output] = 0;
+		return NO_FAULT;
+	}
+
 
 	if (output_control->voltage_reading > CURRENT_OUTPUT_SETUP[output].max_voltage){
+	  counter[output]++;
+	  if (counter[output] > VOLTAGE_FAULT_TIMEOUT){
+		counter[output] = 0;
 		return OVERVOLTAGE_STATE;
+	  }
+
 	}
 	if (output_control->voltage_reading < CURRENT_OUTPUT_SETUP[output].min_voltage){
+	  if (counter[output] > VOLTAGE_FAULT_TIMEOUT){
+		counter[output] = 0;
 		return UNDERVOLTAGE_STATE;
+	  }
+
 	}
+	counter[output] = 0;
 	return NO_FAULT;
 }
 
-void OUTPUT_UpdateFaults(CurrentOutputsTypedef output){
-	CURRENT_OUTPUT_CONTROL[output].fault = CheckCurrentCondition(output);
-	if (CURRENT_OUTPUT_CONTROL[output].fault == NO_FAULT){
-		CURRENT_OUTPUT_CONTROL[output].fault = CheckVoltageCondition(output);
-	}
+void OUTPUT_UpdateFaults (CurrentOutputsTypedef output) {
 
-	switch(CURRENT_OUTPUT_CONTROL[output].fault){
-		case(OVERCURRENT_STATE):
-			CURRENT_OUTPUT_CONTROL[output].fault_buffer = FALSE;
-			break;
-		case(INRUSH_STATE):
-			CURRENT_OUTPUT_CONTROL[output].fault_buffer = TRUE;
-			break;
-		case(OVERVOLTAGE_STATE):
-			break;
-		case(UNDERVOLTAGE_STATE):
-			break;
-		case(NO_FAULT):
-			CURRENT_OUTPUT_CONTROL[output].fault_buffer = FALSE;
-			break;
-	}
- }
+  // If the old state is a hard fault, it shouldn't be updated again, like a blown fuse.
+  if (CURRENT_OUTPUT_CONTROL[output].fault != NO_FAULT && CURRENT_OUTPUT_CONTROL[output].fault != INRUSH_STATE) {
+	return;
+  }
+
+  CURRENT_OUTPUT_CONTROL[output].fault = CheckCurrentCondition (output);
+  if (CURRENT_OUTPUT_CONTROL[output].fault == NO_FAULT) {
+	CURRENT_OUTPUT_CONTROL[output].fault = CheckVoltageCondition (output);
+  }
+
+  switch (CURRENT_OUTPUT_CONTROL[output].fault) {
+	case (OVERCURRENT_STATE):
+	  CURRENT_OUTPUT_CONTROL[output].fault_buffer = FALSE;
+	  break;
+	case (INRUSH_STATE):
+	  CURRENT_OUTPUT_CONTROL[output].fault_buffer = TRUE;
+	  break;
+	case (OVERVOLTAGE_STATE):
+	  break;
+	case (UNDERVOLTAGE_STATE):
+	  break;
+	case (NO_FAULT):
+	  CURRENT_OUTPUT_CONTROL[output].fault_buffer = FALSE;
+	  break;
+  }
+}
 
 
 uint8_t OUTPUT_PollVoltageSense(CurrentOutputsTypedef reading_index){
-
 	PDMHAL_AdcStatusType conversion_status = PDMHAL_ADC_CheckConversionStatusVoltage();
+
 	switch(conversion_status){
 		case(BUSY):
 			return FALSE;
@@ -162,7 +195,6 @@ uint8_t OUTPUT_PollVoltageSense(CurrentOutputsTypedef reading_index){
 
 uint8_t OUTPUT_PollCurrentSense(CurrentOutputsTypedef reading_index){
 	static uint32_t reading = 0;
-
 	PDMHAL_AdcStatusType conversion_status = PDMHAL_ADC_CheckConversionStatusCurrent();
 	switch(conversion_status){
 		case(BUSY):

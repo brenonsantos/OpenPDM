@@ -76,7 +76,7 @@ HAL_StatusTypeDef PDMHAL_CANB_Transmit (PDMHAL_CAN_MessageFrame *tmpCanMsg) {
   pHeader.RTR = CAN_RTR_DATA;
   pHeader.DLC = tmpCanMsg->frame.dataLengthCode;
 
-  for (uint8_t i; i < tmpCanMsg->frame.dataLengthCode; i++) {
+  for (uint8_t i = 0; i < tmpCanMsg->frame.dataLengthCode; i++) {
 	aData[i] = tmpCanMsg->frame.data[i];
   }
 
@@ -99,7 +99,7 @@ PDMHAL_CAN_MessageFrame* PDMHAL_CANB_Receive (void) {
 	  newMsg.frame.id = RxHeader.ExtId;
 	}
 
-	for (uint8_t i; i < RxHeader.DLC; i++) {
+	for (uint8_t i = 0; i < RxHeader.DLC; i++) {
 	  newMsg.frame.data[i] = RxData[i];
 	}
 	return &newMsg;

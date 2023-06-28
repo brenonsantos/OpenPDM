@@ -8,44 +8,29 @@
 
 #include <pdm_rte_comm.h>
 
+
 void COMM_SendCANData(void);
+void COMM_SendUSBData(void);
 
 void RTE_COMM_ReceiveCommunicationData(){
-  PDMHAL_CAN_MessageFrame tmpCanMsg;
 
-  // There isn't new messages
+
+  PDMHAL_CAN_MessageFrame tmpCanMsg;
+  // Check if there is new messages
   if(!SVC_CAN_Receive(&tmpCanMsg)){
 	return;
   }
 
-
-  for (CanBusTransmiterType i = 0; i < NUM_OF_CAN_TRANSMITERS; i++){
-	PDMHAL_CAN_MessageFrame* receiver = &CANBUS_RECEIVER_FRAMES[i].frame;
-
-	if (receiver->frame.CANBus != tmpCanMsg.frame.CANBus){
-	  continue;
-	}
-	if (receiver->frame.idType != tmpCanMsg.frame.idType){
-	  continue;
-	}
-	if (receiver->frame.id != tmpCanMsg.frame.id){
-	  continue;
-	}
-
-	// CANBus, idType and id of the new message is the same as the input struct
-	// Copy the new data and set the message received flag
-	receiver->frame.dataLengthCode = tmpCanMsg.frame.dataLengthCode;
-	for (uint8_t i = 0; i < receiver->frame.dataLengthCode; i++){
-	  receiver->frame.data[i] = tmpCanMsg.frame.data[i];
-	}
-
-	CANBUS_RECEIVER_FRAMES[i].status = CAN_MSG_RECEIVED;
+  for (CanBusReceiverType i = 0; i < NUM_OF_CAN_RECEIVERS; i++){
+	CANBUS_RECEIVER_ProcessReceivedCANFrame(&tmpCanMsg, i);
   }
-
 }
 
 void RTE_COMM_SendCommunicationData(){
   COMM_SendCANData();
+#if USE_USB_OVER_CANB
+	COMM_SendUSBData();
+#endif
 }
 
 void COMM_SendCANData(void){
@@ -53,7 +38,7 @@ void COMM_SendCANData(void){
   uint32_t tick = HAL_GetTick();
 
   for (CanBusTransmiterType i = 0; i < NUM_OF_CAN_TRANSMITERS; i++){
-	uint32_t period_ms = 1000/(uint32_t)CANBUS_TRANSMITER_FRAMES[i].frequency_hz;
+	uint32_t period_ms = (uint32_t)(1000/CANBUS_TRANSMITER_FRAMES[i].frequency_hz);
 
 	if (tick - elapsedTimeSinceLastMsg[i] > period_ms){
 	  elapsedTimeSinceLastMsg[i] = HAL_GetTick();
@@ -64,6 +49,15 @@ void COMM_SendCANData(void){
 
 void RTE_CAN_OUTPUT_Transmit(PDMHAL_CAN_MessageFrame* frame){
   SVC_CAN_Transmit(frame);
+}
+
+void RTE_COMM_SendSystemIntegrityFault(void){
+  SVC_PDM_SendSystemIntegrityFault();
+}
+
+void COMM_SendUSBData(void){
+
+  USB_TransmitPDMStatus();
 }
 
 

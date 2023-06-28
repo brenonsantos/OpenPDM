@@ -17,7 +17,7 @@
 /* CAN payload length and DLC definitions according to ISO 11898-1 */
 #define CAN_MAX_DLC 8
 #define CAN_MAX_DLEN 8
-#define CAN_MAX_MSG_LENGTH 14 // idType 1byte + id 4 bytes + dlc 1 byte + data CAN_MAX_DLEN = 14 bytes
+#define CAN_MAX_MSG_LENGTH 16 // idType 1byte + id 4 bytes + dlc 1 byte + data CAN_MAX_DLEN = 14 bytes
 
 // ----------------- GPIO Defines -----------------
 // These are the GPIO ports and pins that are used by the OPDM driver.

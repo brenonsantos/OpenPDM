@@ -12,6 +12,7 @@
 #include "input_component.h"
 #include "can_input_component.h"
 #include "can_output_component.h"
+#include "usb_component.h"
 
 
 #endif /* __SW_COMPONENTS_H_ */

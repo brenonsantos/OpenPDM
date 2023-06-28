@@ -14,42 +14,6 @@
 #include "sw_components.h"
 
 
-/* The formula that correlates the current reading with the adc reading is:
- * adc_reading = (current * shunt_resistance * current_gain) * (adc_bytes/adc_voltage)
- * where:
- * - current is the current that is being read
- * - shunt_resistance is 3.3m ohms
- * - current_gain is the gain of the current amplifier, that is 100 for LC and 50 for HC
- * - adc_bits is the number of bits that the adc can read, that is 4096
- * - adc_voltage is the max voltage that the adc can read, that is 3.3
- *
- * as shunt_resistance, current_gain, adc_bytes and adc_voltage are constants, we can simplify the formula to:
- * adc_reading_lc = current*372.36
- * adc_reading_hc = current*186.18
-*/
-
-#define HC_CURRENT_CONVERSION_TO_12BITS(current) \
-    ((uint32_t)(current*186.18))
-
-#define LC_CURRENT_CONVERSION_TO_12BITS(current) \
-    ((uint32_t)(current*372.36))
-
-
-
-/* The formula that correlates the output voltage reading with the adc reading is:
-    * adc_reading = (voltage * voltage_divider_ratio) * adc_bits / adc_voltage
-    * where:
-    * - voltage is the voltage that is being read
-    * - voltage_divider_ratio is R1/(R1+R2), that is 36k/(36k+10k)
-    * - adc_bits is the number of bits of the adc, that is 4096
-    * - adc_voltage is the max voltage that the adc can read, that is 3.3
-    *
-    * as voltage_divider_ratio, adc_bytes, adc_voltage are constants, we can simplify the formula to:
-    * adc_reading = voltage * 269.83
-*/
-#define VOLTAGE_CONVERSION_TO_12BITS(voltage) \
-	((uint32_t)(voltage*269.83))
-
 
 //----------------- OUTPUT CONFIGURATION -----------------
 
@@ -65,22 +29,9 @@
 
 #define MAX_LABEL_SIZE 4
 
-//uint8_t OUTPUT_CONDITION(condition_t condition_function);
-
-//uint8_t HC0_OUTPUT_CONDITION(void);
-//uint8_t HC1_OUTPUT_CONDITION(void);
-//uint8_t HC2_OUTPUT_CONDITION(void);
-//uint8_t HC3_OUTPUT_CONDITION(void);
-//
-//uint8_t LC0_OUTPUT_CONDITION(void);
-//uint8_t LC1_OUTPUT_CONDITION(void);
-//uint8_t LC2_OUTPUT_CONDITION(void);
-//uint8_t LC3_OUTPUT_CONDITION(void);
 
 void PDM_APPLY_CONFIG(void);
 
-
-//extern const
 
 //----------------- INPUT CONFIGURATION -----------------
 

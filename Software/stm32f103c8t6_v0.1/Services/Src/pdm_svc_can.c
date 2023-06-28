@@ -18,6 +18,9 @@ uint8_t SVC_CAN_Transmit(PDMHAL_CAN_MessageFrame *tmpCanMsg){
   uint8_t error_code = 0;
   switch (tmpCanMsg->frame.CANBus){
 	case CAN_B:
+	  if (USE_USB_OVER_CANB){
+		return 1;
+	  }
 	  return SVC_CAN_TransmitCanB(tmpCanMsg);
 	case CAN_C:
 	  return SVC_CAN_TransmitCanC(tmpCanMsg);
@@ -35,6 +38,7 @@ uint8_t SVC_CAN_Receive(PDMHAL_CAN_MessageFrame *tmpCanMsg){
 	tmpCanMsg->frame.CANBus = CAN_C;
 	tmpCanMsg->frame.dataLengthCode = tmpCanCMsg.frame.dlc;
 	tmpCanMsg->frame.id = tmpCanCMsg.frame.id;
+	tmpCanMsg->frame.idType = tmpCanCMsg.frame.idType;
 
 	tmpCanMsg->frame.data[0] = tmpCanCMsg.frame.data0;
 	tmpCanMsg->frame.data[1] = tmpCanCMsg.frame.data1;
@@ -47,11 +51,14 @@ uint8_t SVC_CAN_Receive(PDMHAL_CAN_MessageFrame *tmpCanMsg){
 	return TRUE;
   }
   
-  PDMHAL_CAN_MessageFrame *tmpCanBMsg = PDMHAL_CANB_Receive();
-  if (tmpCanBMsg != NULL){
-	tmpCanMsg = tmpCanBMsg;
-	return TRUE;
+  if (!USE_USB_OVER_CANB){
+	  PDMHAL_CAN_MessageFrame *tmpCanBMsg = PDMHAL_CANB_Receive();
+	  if (tmpCanBMsg != NULL){
+		tmpCanMsg = tmpCanBMsg;
+		return TRUE;
+	  }
   }
+
   return FALSE;
 }
 
@@ -75,5 +82,8 @@ uint8_t SVC_CAN_TransmitCanC(PDMHAL_CAN_MessageFrame *tmpCanMsg){
 }
 
 uint8_t SVC_CAN_TransmitCanB(PDMHAL_CAN_MessageFrame *tmpCanMsg){
+  if (USE_USB_OVER_CANB){
+	return 1;
+  }
   return PDMHAL_CANB_Transmit(tmpCanMsg);
 }

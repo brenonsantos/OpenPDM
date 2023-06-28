@@ -14,6 +14,7 @@
 typedef enum{
   CAN_MSG_NOT_RECEIVED = 0,
   CAN_MSG_RECEIVED,
+  CAN_MSG_TIMEOUT
 }CANBusReceivedMessageStatus;
 
 typedef enum{
@@ -36,5 +37,8 @@ typedef struct{
 
 
 extern CANBusReceiverTypedef CANBUS_RECEIVER_FRAMES[NUM_OF_CAN_RECEIVERS];
+
+
+uint8_t CANBUS_RECEIVER_ProcessReceivedCANFrame(PDMHAL_CAN_MessageFrame *received_frame, CanBusReceiverType reicever_id);
 
 #endif /* __CAN_INPUT_COMPONENT_H_ */
