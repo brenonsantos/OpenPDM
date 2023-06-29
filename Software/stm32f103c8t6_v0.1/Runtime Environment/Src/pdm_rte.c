@@ -8,5 +8,6 @@
 #include "pdm_rte.h"
 
 void RTE_Init(void){
-    void RTE_OutputsInit();
+    OUTPUT_initOutputs();
+    RTE_OUTPUT_init();
 }

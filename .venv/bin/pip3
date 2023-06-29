@@ -1,4 +1,4 @@
-#!/home/breno/OpenPDM/.venv/bin/python3
+#!/home/breno/OpenPDM/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

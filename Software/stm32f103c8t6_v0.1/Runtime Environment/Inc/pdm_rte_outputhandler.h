@@ -11,26 +11,22 @@
 #include "pdm_rte_def.h"
 
 
+void RTE_OUTPUT_init(void);
+void RTE_PollOuputCurrentReading(void);
+void RTE_UpdateFaults(CurrentOutputsTypedef output);
 
-typedef enum{
-	NO_FAULT = 0,
-	INRUSH_STATE,
-	OVERCURRENT_STATE,
-	OVERVOLTAGE_STATE,
-	UNDERVOLTAGE_STATE
-}OutputFaultStateTypedef;
+CurrentOutputsTypedef RTE_getNextEnabledOutput(CurrentOutputsTypedef current_output);
+void RTE_ResetOutput(CurrentOutputsTypedef output);
+void RTE_UpdateFaults(CurrentOutputsTypedef output);
+void RTE_ResetFault(CurrentOutputsTypedef output);
+void RTE_ResetRetryAttempts(CurrentOutputsTypedef output);
 
-typedef enum{
-	OUTPUT_OFF = 0,
-	OUTPUT_OK,
-	OUTPUT_WAITING_FOR_RESET,
-	OUTPUT_FAULT,
-	OUTPUT_DISABLED,
-}OutputStateTypedef;
 
-void RTE_OutputsInit(void);
-void RTE_PollOutputs(void);
-void RTE_UpdateFaultState(CurrentOutputsTypedef output);
-OutputStateTypedef RTE_CalculateOutputState(CurrentOutputsTypedef output);
+uint8_t RTE_OUTPUT_UpdateSense(void);
+void RTE_OUTPUT_UpdateFault(void);
+void RTE_OUTPUT_WriteOutputs(void);
+void RTE_OUTPUT_PowerOffAllOutputs(void);
+uint32_t RTE_OUTPUT_GetTotalCurrentDraw(void);
+
 
 #endif /* INC_PDM_OUTPUTHANDLER_H_ */

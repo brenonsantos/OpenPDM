@@ -1,0 +1,12 @@
+(sym_lib_table
+  (lib (name "YAAJ_BluePill")(type "Legacy")(uri "${KIPRJMOD}/Symbols/YAAJ_BluePill.lib")(options "")(descr ""))
+  (lib (name "YAAJ_BluePill_Part_Like")(type "Legacy")(uri "${KIPRJMOD}/Symbols/YAAJ_BluePill_Part_Like.lib")(options "")(descr ""))
+  (lib (name "YAAJ_BluePill_Part_Like_SWD_Breakout")(type "Legacy")(uri "${KIPRJMOD}/Symbols/YAAJ_BluePill_Part_Like_SWD_Breakout.lib")(options "")(descr ""))
+  (lib (name "YAAJ_BluePill_SWD_Breakout")(type "Legacy")(uri "${KIPRJMOD}/Symbols/YAAJ_BluePill_SWD_Breakout.lib")(options "")(descr ""))
+  (lib (name "CD74HC4067M")(type "Legacy")(uri "${KIPRJMOD}/Symbols/CD74HC4067M.lib")(options "")(descr ""))
+  (lib (name "INA180A1DBVR")(type "KiCad")(uri "${KIPRJMOD}/Symbols/INA180A1DBVR.kicad_sym")(options "")(descr ""))
+  (lib (name "LT1161CSW-BPF")(type "Legacy")(uri "${KIPRJMOD}/Symbols/LT1161CSW-BPF.lib")(options "")(descr ""))
+  (lib (name "TJA1050T")(type "Legacy")(uri "${KIPRJMOD}/Symbols/TJA1050T.lib")(options "")(descr ""))
+  (lib (name "TJA1055T")(type "KiCad")(uri "${KIPRJMOD}/Symbols/TJA1055T.kicad_sym")(options "")(descr ""))
+  (lib (name "SP720ABG")(type "Legacy")(uri "${KIPRJMOD}/Symbols/SP720ABG.lib")(options "")(descr ""))
+)
