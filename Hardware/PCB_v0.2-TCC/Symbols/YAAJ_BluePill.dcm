@@ -1,8 +1,0 @@
-EESchema-DOCLIB  Version 2.0
-#
-$CMP YAAJ_BluePill
-D STM32 Blue Pill ; KLC compliant
-K module blue pill STM32
-$ENDCMP
-#
-#End Doc Library

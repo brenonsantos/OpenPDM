@@ -2,8 +2,10 @@
 Software/.metadata/
 Software/stm32f103c8t6_v0.1/Debug/
 Hardware/PCB_v0.1/OPDM-backups/
+Hardware/PCB_v0.1_revB/OPDM-backups/
 Software/stm32f103c8t6_v0.1/.settings/
 Software/stm32f103c8t6_v0.1/.vscode/
 Software/stm32f103c8t6_v0.1/stm32f103c8t6_v0.1 Debug.cfg
 Software/stm32f103c8t6_v0.1/stm32f103c8t6_v0.1 Debug.launch
 Software/stm32f103c8t6_v0.1/.metadata
+

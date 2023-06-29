@@ -1,4 +1,0 @@
-(fp_lib_table
-  (lib (name "OPDM")(type "KiCad")(uri "${KIPRJMOD}/Footprints")(options "")(descr ""))
-  (lib (name "Footprints")(type "KiCad")(uri "${KIPRJMOD}/Footprints")(options "")(descr "")(disabled))
-)
