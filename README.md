@@ -21,10 +21,10 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 - Verified the functionality of input channels as analog inputs.
 
 ## Hardware rambling
-The PCB is the weakest point on this project version. I've designed it in 2 weeks 
+The PCB is the weakest point on this project version. I've designed it in 1 week as needed it to help me develop the software. The time budget for developing this project was also only 3-4months. I've made a lot of cost cutting, 
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzYwNTQ2MzI4XX0=
+eyJoaXN0b3J5IjpbLTE4MDU0OTE0MzJdfQ==
 -->
