@@ -21,11 +21,18 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 - Verified the functionality of input channels as analog inputs.
 
 ## Hardware rambling
-The PCB is a 100x100mm 4 layer board using 1 Oz copper for the outer layers and 0.5 Oz copper for the inner layers (the cheapest specs from JLCPCB). Parallel layers where used to distribute the current density, allowing for a greater current capability of the thin layers used.  IRFR7440TRPBF
+The PCB is a 100x100mm 4 layer board using 1 Oz copper for the outer layers and 0.5 Oz copper for the inner layers (the cheapest specs from JLCPCB). Parallel layers where used to distribute the current density, allowing for a greater current capability of the thin layers used.  
+
+### PCB summary
+- Manufactured by JLCPCB
+- 4 Layer, 1 Oz external and 0.5 internal copper thickness.
+- 
+IRFR7440TRPBF
 The PCB is the weakest point on this project version. I've designed it in 1 week as needed it to help me develop the software. The time budget for developing this project was also only 3-4months. I've made a lot of cost cutting, because I'm a broke college student, this version of the PDM costs around $40.00 including shipping from LCSC and the PCB from JLCPCB
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTkxOTg0NzYxNywtMTg3MDAwMjM5MV19
+eyJoaXN0b3J5IjpbLTEwOTgyNTI2NjQsLTE4NzAwMDIzOTFdfQ
+==
 -->
