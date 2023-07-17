@@ -29,6 +29,7 @@ The PCB is a 100x100mm 4 layer board using 1 Oz copper for the outer layers and 
 - 4 Layer, 1 Oz external and 0.5 internal copper thickness.
 - Single [IRFR7440TRPBF](https://www.infineon.com/dgdl/Infineon-IRFR7440-DataSheet-v01_01-EN.pdf?fileId=5546d462533600a4015356359e662117) for 10A outputs, double for 20A outputs.
 - INA180A2 and A3 with 3mΩ shunt resistor
+- Simple voltage divider for input sensing
 - 
 
 The PCB is the weakest point on this project version. I've designed it in 1 week as needed it to help me develop the software. The time budget for developing this project was also only 3-4months. I've made a lot of cost cutting, because I'm a broke college student, this version of the PDM costs around $40.00 including shipping from LCSC and the PCB from JLCPCB
@@ -36,6 +37,5 @@ The PCB is the weakest point on this project version. I've designed it in 1 week
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3MjYwNDIyMDQsLTE4NzAwMDIzOTFdfQ
-==
+eyJoaXN0b3J5IjpbMzI5OTExMjgwLC0xODcwMDAyMzkxXX0=
 -->
