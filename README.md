@@ -23,14 +23,13 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 
 ## How can I contribute
 As this project is still in its early stage, contributing with work may be challenging (but I'm open to it, there is a lot to do!). Please message me first to discuss alignment and potential tasks.
-More importantly, your experience, tips, or suggestions are highly welcome! If you have expertise in automotive electronics, have participated in SAE competitions, or have real-world experience, I'd love to have a conversation. ~~My experience is watching a lot of YouTube and driving some old shitboxes.~~
+More importantly, your experience, tips, or suggestions are highly welcome! If you have expertise in automotive electronics, have participated in SAE competitions, or have real-world experience, I'd love to have a conversation. ~~My experience is watching a lot of YouTube and daily driving some old shitboxes.~~
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 
 ## Hardware Rambling
-The PCB is a 100x100mm 4 layer board using 1 Oz copper for the outer layers and 0.5 Oz copper for the inner layers (the cheapest specs from JLCPCB). Parallel layers where used to distribute the current density, allowing for a greater current capability of the thin layers used.
-MOSFETs were used instead of those smart switches, like the Infineon ones, because it is cheaper.  
+The PCB design features a 100x100mm 4-layer board using 1 Oz copper for the outer layers and 0.5 Oz copper for the inner layers (the cheapest specs from JLCPCB). Parallel layers were used to distribute the current density, allowing for a greater current capability of the thin layers used. MOSFETs were chosen instead of more advanced smart switches (like Infineon ones) to keep the project cost-effective. 
 
 ### PCB Summary
 - Manufactured by JLCPCB
@@ -50,6 +49,6 @@ The configuration of the PDM is done by modifying a single file at core/src/pdm_
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQyMDEwMjIxMSwtMTg0NTQzMzg3MCwxMz
+eyJoaXN0b3J5IjpbMTQ3NDE2NzI5OSwtMTg0NTQzMzg3MCwxMz
 Y0ODYzNTMzLC0xNjA0ODE0MDAzLC0xODcwMDAyMzkxXX0=
 -->
