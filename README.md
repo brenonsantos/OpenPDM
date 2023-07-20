@@ -22,14 +22,14 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 
 ## Hardware rambling
 The PCB is a 100x100mm 4 layer board using 1 Oz copper for the outer layers and 0.5 Oz copper for the inner layers (the cheapest specs from JLCPCB). Parallel layers where used to distribute the current density, allowing for a greater current capability of the thin layers used.
-Mosfets were used instead of those smart switches,  
+MOSFETs were used instead of those smart switches, like the Infineon ones, because it is cheaper.  
 
 ### PCB summary
 - Manufactured by JLCPCB
 - $40.00 including shipping to Brazil
 - 4 Layer, 1 Oz external and 0.5 internal copper thickness.
 - Single [IRFR7440TRPBF](https://www.infineon.com/dgdl/Infineon-IRFR7440-DataSheet-v01_01-EN.pdf?fileId=5546d462533600a4015356359e662117) for 10A outputs, double for 20A outputs.
-- INA180A2 and A3 with 3mΩ shunt resistor
+- INA180A2 and A3 with 3mΩ shunt resistor for current sensing
 - Simple voltage divider for input sensing
 
 ### The Bad
@@ -38,6 +38,6 @@ The PCB is the weakest point on this project version. I've designed it in 1 week
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTI1MDMxNDE3LC0xNjA0ODE0MDAzLC0xOD
-cwMDAyMzkxXX0=
+eyJoaXN0b3J5IjpbMjEzMTU2Mzk0NiwtMTYwNDgxNDAwMywtMT
+g3MDAwMjM5MV19
 -->
