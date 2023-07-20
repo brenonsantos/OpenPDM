@@ -22,7 +22,7 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 - Verified the functionality of input channels as analog inputs.
 
 ## How can I contribute
-As this project is in a really early stage, it may be hard to contribut
+As this project is in a really early stage, it may be hard to contribute with work (but I'm totally open to it, there is a bunch of stuff to do!). I would prefer if you message me first, so we can be aligned. 
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
@@ -49,6 +49,6 @@ The configuration of the PDM is done by modifying a single file at core/src/pdm_
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTM5NzQ5NDg0LDEzNjQ4NjM1MzMsLTE2MD
-Q4MTQwMDMsLTE4NzAwMDIzOTFdfQ==
+eyJoaXN0b3J5IjpbLTQ3ODAyNzgwNywxMzY0ODYzNTMzLC0xNj
+A0ODE0MDAzLC0xODcwMDAyMzkxXX0=
 -->
