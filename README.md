@@ -40,7 +40,7 @@ The PCB design features a 100x100mm 4-layer board using 1 Oz copper for the oute
 - Simple voltage divider for input sensing
 
 ### The Bad
-The current PCB design is a weak point in this version of the project. It was created in a week to support software development, and due to budget constraints, some cost-cutting measures were taken. As a result, there is missing redundancy and filtering components. I'll learn more about PCB design and scrap this version, any help is appreciated.
+The current PCB design is a weak point in this version of the project. It was created in a week to support software development, and due to budget constraints, some cost-cutting measures were taken. As a result, there is missing redundancy and filtering components. I'll learn more about PCB design and scrap this version, and any help or expertise in this area would be greatly appreciated. 
 
 ## Software Rambling
 The software architecture was based on AUTOSAR because we thought it would be cool. Problem is, I didn't knew anything about AUTOSAR before starting this project, so it is kind of messy. For the next version I'll simplify the architecture and port the code to C++. 
@@ -49,6 +49,7 @@ The configuration of the PDM is done by modifying a single file at core/src/pdm_
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY2OTk3MjYwOCwtMTg0NTQzMzg3MCwxMz
-Y0ODYzNTMzLC0xNjA0ODE0MDAzLC0xODcwMDAyMzkxXX0=
+eyJoaXN0b3J5IjpbMjA0NTQwOTc3NSwxNjY5OTcyNjA4LC0xOD
+Q1NDMzODcwLDEzNjQ4NjM1MzMsLTE2MDQ4MTQwMDMsLTE4NzAw
+MDIzOTFdfQ==
 -->
