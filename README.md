@@ -1,7 +1,7 @@
 # OpenPDM: Programmable Power Distribution Module for Your Car Project
 
 **Disclaimer: This project is a work in progress! Don't blow up your stuff**
-If you want to help, discuss something or chit-chat, please message me: brenonsantos96@gmail.com
+If you want to contribute, discuss something or chit-chat, please message me: brenonsantos96@gmail.com
 
 OpenPDM is an open-source, programmable Power Distribution Module for car enthusiast and electronics aficionados. It is being developed by me, as my undergrad thesis. Designed to cater to the needs of electronics lovers, car enthusiasts, and tinkerers alike, OpenPDM aims to bring cheaply programmable fusebox capabilities to your project car.
 
@@ -20,6 +20,9 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 - Verified activation of output channels based on configured conditions.
 - Conducted tests to disable outputs in case of overcurrent, overvoltage and undervoltage situations.
 - Verified the functionality of input channels as analog inputs.
+
+## How can I contribute
+I dono
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
@@ -46,6 +49,6 @@ The configuration of the PDM is done by modifying a single file at core/src/pdm_
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDcyNDAwMDIsMTM2NDg2MzUzMywtMTYwND
-gxNDAwMywtMTg3MDAwMjM5MV19
+eyJoaXN0b3J5IjpbLTEyNTI4OTk0MTUsMTM2NDg2MzUzMywtMT
+YwNDgxNDAwMywtMTg3MDAwMjM5MV19
 -->
