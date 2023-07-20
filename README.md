@@ -44,12 +44,12 @@ The current PCB design is a weak point in this version of the project. It was cr
 
 ## Software Rambling
 The software architecture was based on AUTOSAR because we thought it would be cool. Problem is, I didn't knew anything about AUTOSAR before starting this project, so it is kind of messy. For the next version I'll simplify the architecture and port the code to C++. 
-The configuration of the PDM is done by modifying a single file at core/src/pdm_cfg.c. More about this.
+The configuration of the PDM is done by modifying a single file at core/src/pdm_cfg.c. [More about this](Software/stm32f103c8t6_v0.1/README.md).
 
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA0NTQwOTc3NSwxNjY5OTcyNjA4LC0xOD
-Q1NDMzODcwLDEzNjQ4NjM1MzMsLTE2MDQ4MTQwMDMsLTE4NzAw
-MDIzOTFdfQ==
+eyJoaXN0b3J5IjpbODMzMDEwOTMwLDIwNDU0MDk3NzUsMTY2OT
+k3MjYwOCwtMTg0NTQzMzg3MCwxMzY0ODYzNTMzLC0xNjA0ODE0
+MDAzLC0xODcwMDAyMzkxXX0=
 -->
