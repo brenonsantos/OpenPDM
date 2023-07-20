@@ -29,7 +29,7 @@ MOSFETs were used instead of those smart switches, like the Infineon ones, becau
 - $40.00 including shipping to Brazil
 - 4 Layer, 1 Oz external and 0.5 internal copper thickness.
 - Single [IRFR7440TRPBF](https://www.infineon.com/dgdl/Infineon-IRFR7440-DataSheet-v01_01-EN.pdf?fileId=5546d462533600a4015356359e662117) for 10A outputs, double for 20A outputs.
-- INA180A2 and A3 with 3mΩ shunt resistor for current sensing
+- [INA180A2 and A3](https://www.ti.com/lit/ds/symlink/ina180.pdf) with 3mΩ shunt resistor for current sensing
 - Simple voltage divider for input sensing
 
 ### The Bad
@@ -38,6 +38,6 @@ The PCB is the weakest point on this project version. I've designed it in 1 week
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjEzMTU2Mzk0NiwtMTYwNDgxNDAwMywtMT
-g3MDAwMjM5MV19
+eyJoaXN0b3J5IjpbMTI1MTU4Mjg5LC0xNjA0ODE0MDAzLC0xOD
+cwMDAyMzkxXX0=
 -->
