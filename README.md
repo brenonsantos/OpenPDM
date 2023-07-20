@@ -37,11 +37,11 @@ The PCB is the weakest point on this version of the project. I've designed it in
 
 ## Software Rambling
 The software architecture was based on AUTOSAR because we thought it would be cool. Problem is, I didn't knew anything about AUTOSAR before starting this project, so it is kind of messy. For the next version I'll simplify the architecture and port the code to C++. 
-
+The configuration of the PDM is done by modifying a single file at core/src/pdm_cfg.c. More can be  
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQwMjg2MjM3MiwxMzY0ODYzNTMzLC0xNj
+eyJoaXN0b3J5IjpbLTEyMjA1MjQ0NywxMzY0ODYzNTMzLC0xNj
 A0ODE0MDAzLC0xODcwMDAyMzkxXX0=
 -->
