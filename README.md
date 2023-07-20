@@ -22,8 +22,8 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 - Verified the functionality of input channels as analog inputs.
 
 ## How can I contribute
-As this project is in a really early stage, it may be hard to contribute with work (but I'm totally open to it, there is a bunch of stuff to do!). I would prefer if you message me first, so we can be aligned. 
-You can also contribute with your experience, tips or suggestions! I don't have as much of experience as I would like working on cars, my experience is watching a lot of YouTube and driving a old shitbox, but if you have participated on SAE competitions or works on this stuff for real, I'd love to talk.
+As this project is still in its early stage, contributing with work may be challenging (but I'm open to it, there is a lot to do!). Please message me first to discuss alignment and potential tasks.
+More importantly, your experience, tips, or suggestions are highly welcome! If you have expertise in automotive electronics, have participated in SAE competitions, or have real-world experience, I'd love to have a conversation. ~~My experience is watching a lot of YouTube and driving some old shitboxes.~~
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
@@ -50,6 +50,6 @@ The configuration of the PDM is done by modifying a single file at core/src/pdm_
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE4NDU0MzM4NzAsMTM2NDg2MzUzMywtMT
-YwNDgxNDAwMywtMTg3MDAwMjM5MV19
+eyJoaXN0b3J5IjpbLTQyMDEwMjIxMSwtMTg0NTQzMzg3MCwxMz
+Y0ODYzNTMzLC0xNjA0ODE0MDAzLC0xODcwMDAyMzkxXX0=
 -->
