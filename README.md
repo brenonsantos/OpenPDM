@@ -20,6 +20,9 @@ OpenPDM is an open-source, programmable Power Distribution Module for car enthus
 - Conducted tests to disable outputs in case of overcurrent, overvoltage and undervoltage situations.
 - Verified the functionality of input channels as analog inputs.
 
+## Disclaimer
+Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
+
 ## Hardware Rambling
 The PCB is a 100x100mm 4 layer board using 1 Oz copper for the outer layers and 0.5 Oz copper for the inner layers (the cheapest specs from JLCPCB). Parallel layers where used to distribute the current density, allowing for a greater current capability of the thin layers used.
 MOSFETs were used instead of those smart switches, like the Infineon ones, because it is cheaper.  
@@ -37,11 +40,11 @@ The PCB is the weakest point on this version of the project. I've designed it in
 
 ## Software Rambling
 The software architecture was based on AUTOSAR because we thought it would be cool. Problem is, I didn't knew anything about AUTOSAR before starting this project, so it is kind of messy. For the next version I'll simplify the architecture and port the code to C++. 
-The configuration of the PDM is done by modifying a single file at core/src/pdm_cfg.c. More can be  
+The configuration of the PDM is done by modifying a single file at core/src/pdm_cfg.c. More about this.
 
-## Disclaimer
-Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
+
+
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyMjA1MjQ0NywxMzY0ODYzNTMzLC0xNj
+eyJoaXN0b3J5IjpbMTk4MjY4NzY4NSwxMzY0ODYzNTMzLC0xNj
 A0ODE0MDAzLC0xODcwMDAyMzkxXX0=
 -->
