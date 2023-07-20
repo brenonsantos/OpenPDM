@@ -36,11 +36,11 @@ MOSFETs were used instead of those smart switches, like the Infineon ones, becau
 The PCB is the weakest point on this version of the project. I've designed it in 1 week as needed it to help me develop the software. The time budget for developing this project was also only 3-4months. I've made a lot of cost cutting, because I'm a broke college student, thus this version of the PDM costs around $40.00 including shipping from LCSC and the PCB from JLCPCB, which isn't so much of a feature, more like there are missing redudancy and filtering stuff. I'll learn more about PCB design and scrap this version, any help is appreciated.
 
 ## Software Rambling
-The software architecture was based on AUTOSAR because we thought it would be cool. Problem is, I didn't knew anythin
+The software architecture was based on AUTOSAR because we thought it would be cool. Problem is, I didn't knew anything about AUTOSAR before starting this project, so it is kind of messy. For the next version I'll simplify the architecture and port the code to C++. 
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc2NjIxNjAwMCwxMzY0ODYzNTMzLC0xNj
-A0ODE0MDAzLC0xODcwMDAyMzkxXX0=
+eyJoaXN0b3J5IjpbLTEyNTg2NzUxMjYsMTM2NDg2MzUzMywtMT
+YwNDgxNDAwMywtMTg3MDAwMjM5MV19
 -->
