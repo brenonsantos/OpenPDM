@@ -40,7 +40,7 @@ The PCB design features a 100x100mm 4-layer board using 1 Oz copper for the oute
 - Simple voltage divider for input sensing
 
 ### The Bad
-The PCB is the weakest point on this version of the project. I've designed it in 1 week as needed it to help me develop the software. The time budget for developing this project was also only 3-4months. I've made a lot of cost cutting, because I'm a broke college student, thus this version of the PDM costs around $40.00 including shipping from LCSC and the PCB from JLCPCB, which isn't so much of a feature, more like there are missing redudancy and filtering stuff. I'll learn more about PCB design and scrap this version, any help is appreciated.
+The current PCB design is a weak point in this version of the project. It was created in a week to support software development, and due to budget constraints, some cost-cutting measures were taken. As a result, there is missing redundancy and filtering components. I'll learn more about PCB design and scrap this version, any help is appreciated.
 
 ## Software Rambling
 The software architecture was based on AUTOSAR because we thought it would be cool. Problem is, I didn't knew anything about AUTOSAR before starting this project, so it is kind of messy. For the next version I'll simplify the architecture and port the code to C++. 
@@ -49,6 +49,6 @@ The configuration of the PDM is done by modifying a single file at core/src/pdm_
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQ3NDE2NzI5OSwtMTg0NTQzMzg3MCwxMz
+eyJoaXN0b3J5IjpbMTY2OTk3MjYwOCwtMTg0NTQzMzg3MCwxMz
 Y0ODYzNTMzLC0xNjA0ODE0MDAzLC0xODcwMDAyMzkxXX0=
 -->
