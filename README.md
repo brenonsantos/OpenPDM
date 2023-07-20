@@ -33,11 +33,11 @@ MOSFETs were used instead of those smart switches, like the Infineon ones, becau
 - Simple voltage divider for input sensing
 
 ### The Bad
-The PCB is the weakest point on this project version. I've designed it in 1 week as needed it to help me develop the software. The time budget for developing this project was also only 3-4months. I've made a lot of cost cutting, because I'm a broke college student, this version of the PDM costs around $40.00 including shipping from LCSC and the PCB from JLCPCB, which isn't so much of a feature, more like there are missing redudancy and filtering stuff.
+The PCB is the weakest point on this version of the project. I've designed it in 1 week as needed it to help me develop the software. The time budget for developing this project was also only 3-4months. I've made a lot of cost cutting, because I'm a broke college student, thus this version of the PDM costs around $40.00 including shipping from LCSC and the PCB from JLCPCB, which isn't so much of a feature, more like there are missing redudancy and filtering stuff.
 
 ## Disclaimer
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjExNjIyNzY5LC0xNjA0ODE0MDAzLC0xOD
-cwMDAyMzkxXX0=
+eyJoaXN0b3J5IjpbMTM2NDg2MzUzMywtMTYwNDgxNDAwMywtMT
+g3MDAwMjM5MV19
 -->
