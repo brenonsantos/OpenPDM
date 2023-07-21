@@ -5,6 +5,8 @@ If you want to contribute, discuss something or chit-chat, please message me: br
 
 OpenPDM is an open-source, programmable Power Distribution Module for car enthusiast and electronics aficionados. It is being developed by me, as my undergrad thesis. Designed to cater to the needs of electronics lovers, car enthusiasts, and tinkerers alike, OpenPDM aims to bring cheaply programmable fusebox capabilities to your project car.
 
+![pcb_3dview](../assets/Imgs/pcb_top_bottom_3dview.png)
+
 ## Features
 - Utilizes the STM32 Blue Pill Board as the core controller
 - Provides 4 high-side outputs capable of handling up to 10 Amps and 4 outputs supporting up to 20 Amps.
@@ -29,7 +31,12 @@ More importantly, your experience, tips, or suggestions are highly welcome! If y
 Please note that OpenPDM is still in the early stages of development and has not been thoroughly tested with nominal current or in an automotive environment. Therefore, it is not even in a "ready-to-blow-up-your-car" stage. 
 
 ## Hardware Rambling
+
+![pcb_final](../assets/Imgs/pcb_final.png)
+
 The PCB design features a 100x100mm 4-layer board using 1 Oz copper for the outer layers and 0.5 Oz copper for the inner layers (the cheapest specs from JLCPCB). Parallel layers were used to distribute the current density, allowing for a greater current capability of the thin layers used. MOSFETs were chosen instead of more advanced smart switches (like Infineon ones) to keep the project cost-effective. 
+
+![pcb_interfaces](../assets/Imgs/pcb_interfaces.png)
 
 ### PCB Summary
 - Manufactured by JLCPCB
